@@ -5,10 +5,13 @@
   "main": "server.ts",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run clean && tsc && cp -R public dist/ && cp package.json dist/  && cp -R prisma dist/",
+    "build": "rimraf dist && tsc && cp -R public dist/ && cp -R prisma dist/",
+    "start": "nodemon src/index.ts",
     "start:dev": "ts-node-dev --poll src/server.ts",
     "start:watch": "nodemon -r src/server.ts",
-    "start:prod": "node dist/server.js"
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "prisma": {
     "seed": "ts-node src/seed/seed.ts"
@@ -44,5 +47,10 @@
     "nodemon": "^3.0.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
-  }
+  },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ]
 }
