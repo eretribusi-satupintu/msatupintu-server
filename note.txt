@@ -1,0 +1,15 @@
+# build compose
+docker compose -f docker-compose.dev.yaml up -d --build
+
+# remove compose
+docker compose -p mserver down
+
+# execute prisma command to container from host
+docker exec -it container-name bash
+
+# generate db
+npx prisma migrate dev --name "migration-name"
+
+# push db schema to mysql server
+npx prisma db push 
+

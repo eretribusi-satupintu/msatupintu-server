@@ -1,0 +1,72 @@
+version: "3"
+
+services:
+  app:
+    container_name: mserver-satupintu
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    networks:
+      - satupintu-net
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: satupintu
+    ports:
+      - 3306:3306
+    networks:
+      - satupintu-net
+
+  phpmyadmin:
+    depends_on:
+      - mysql
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=mysql
+      - MYSQL_ROOT_PASSWORD=123123
+    networks:
+      - satupintu-net
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: satupintu
+    ports:
+      - 27017:27017
+    networks:
+      - satupintu-net
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongoexpress
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: satupintu
+      ME_CONFIG_MONGODB_URL: mongodb://admin:satupintu@mongodb:27017/
+    networks:
+      - satupintu-net
+
+networks:
+  satupintu-net:
+    driver: bridge
