@@ -5,7 +5,7 @@
   "main": "server.ts",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "rimraf dist && tsc && cp -R public dist/ && npx prisma generate && cp -R prisma dist/",
+    "build": "rimraf dist && tsc && cp -R public dist/ && cp -R prisma dist/",
     "start": "nodemon src/index.ts",
     "start:dev": "ts-node-dev --poll src/server.ts",
     "start:watch": "nodemon -r src/server.ts",
