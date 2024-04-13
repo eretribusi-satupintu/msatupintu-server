@@ -33,7 +33,7 @@ const register = (req) => __awaiter(void 0, void 0, void 0, function* () {
                 password: hashedPassword,
             },
         });
-        return { message: "user created succesfully", user: data };
+        return { message: 'user created succesfully', user: data };
     }
     catch (error) {
         throw error;
@@ -61,10 +61,10 @@ const login = (req) => __awaiter(void 0, void 0, void 0, function* () {
             },
         });
         if (user === null) {
-            throw { message: "Akun anda tidak terdaftar" };
+            throw { message: 'Akun anda tidak terdaftar' };
         }
         if (!(yield (0, utils_1.checkPassword)(req.password, user.password))) {
-            throw { message: "Password anda salah" };
+            throw { message: 'Password anda salah' };
         }
         // const { id, password, ...userData } = user;
         const userData = {
@@ -83,13 +83,13 @@ const login = (req) => __awaiter(void 0, void 0, void 0, function* () {
         });
         if (user.wajib_retribusi !== null) {
             return {
-                message: "authenticated",
+                message: 'authenticated',
                 data: Object.assign(Object.assign({}, userData), { role: user.wajib_retribusi, token }),
             };
         }
         if (user.petugas !== null) {
             return {
-                message: "authenticated",
+                message: 'authenticated',
                 data: Object.assign(Object.assign({}, userData), { role: user.petugas, token }),
             };
         }
@@ -111,17 +111,17 @@ const checkEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
     if (checkEmail) {
         return {
             status: true,
-            message: "email has been taken",
+            message: 'email has been taken',
         };
     }
     return {
         status: false,
-        message: "Email can be use",
+        message: 'Email can be use',
     };
 });
 const logout = () => __awaiter(void 0, void 0, void 0, function* () {
     return {
-        message: "Logout Successfully",
+        message: 'Logout Successfully',
     };
 });
 exports.logout = logout;

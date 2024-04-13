@@ -20,7 +20,7 @@ const petugasPayTagihan = (transaksiPetugas) => __awaiter(void 0, void 0, void 0
                 id: transaksiPetugas.tagihan_id,
             },
             data: {
-                status: "VERIFIED",
+                status: 'VERIFIED',
             },
         });
         const petugasTransaksi = yield prisma.transaksiPetugas.create({
@@ -28,7 +28,7 @@ const petugasPayTagihan = (transaksiPetugas) => __awaiter(void 0, void 0, void 0
                 petugas_id: transaksiPetugas.petugas_id,
                 tagihan_id: tagihan.id,
                 nominal: tagihan.total_harga,
-                status: "VERIFIED",
+                status: 'VERIFIED',
             },
         });
         const tagihanDetail = yield (0, tagihanController_1.getDetailTagihan)(tagihan.id);
@@ -46,7 +46,7 @@ const petugasCancelPayTagihan = (tagihan_id) => __awaiter(void 0, void 0, void 0
                 id: tagihan_id,
             },
             data: {
-                status: "REQUEST",
+                status: 'REQUEST',
             },
             include: {
                 TransaksiPetugas: true,
@@ -57,7 +57,7 @@ const petugasCancelPayTagihan = (tagihan_id) => __awaiter(void 0, void 0, void 0
                 id: tagihan.TransaksiPetugas.id,
             },
             data: {
-                status: "REQUEST",
+                status: 'REQUEST',
             },
         });
         const tagihanDetail = yield (0, tagihanController_1.getDetailTagihan)(tagihan_id);
@@ -74,7 +74,7 @@ const getBillAmount = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, 
             where: {
                 petugas_id: petugas_id,
                 disetor: false,
-                status: "VERIFIED",
+                status: 'VERIFIED',
                 AND: {
                     tagihan: {
                         kontrak: {

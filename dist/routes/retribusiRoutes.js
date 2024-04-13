@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const retribusiController_1 = require("../controllers/retribusiController");
 const router = express_1.default.Router();
-router.get("/:retribusi_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/:retribusi_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, retribusiController_1.getRetribusiDetail)(Number(req.params.retribusi_id));
         res.status(200).json({ data: data });
@@ -25,7 +25,7 @@ router.get("/:retribusi_id", (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.status(500).json({ message: error });
     }
 }));
-router.get("/get/wajib-retribusi/:wr_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/get/wajib-retribusi/:wr_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, retribusiController_1.getSewaWajibRetribusi)(Number(req.params.wr_id));
         res.status(200).json({ data: data });
@@ -34,7 +34,7 @@ router.get("/get/wajib-retribusi/:wr_id", (req, res) => __awaiter(void 0, void 0
         res.status(500).json({ message: error });
     }
 }));
-router.get("/get/wajib-retribusi/:wr_id/item-retribusi/:retribusi_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/get/wajib-retribusi/:wr_id/item-retribusi/:retribusi_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, retribusiController_1.getItemWajibRetribusiKontrak)(Number(req.params.wr_id), Number(req.params.retribusi_id));
         res.status(200).json({ data: data });

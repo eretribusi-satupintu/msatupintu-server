@@ -92,7 +92,7 @@ const getWajibRetribusiDetail = (wr_id, sub_wilayah_id) => __awaiter(void 0, voi
                             select: {
                                 tagihan: {
                                     where: {
-                                        status: "NEW",
+                                        status: 'NEW',
                                     },
                                 },
                             },
@@ -101,7 +101,7 @@ const getWajibRetribusiDetail = (wr_id, sub_wilayah_id) => __awaiter(void 0, voi
                 },
             },
         });
-        var jumlah_tagihan = 0;
+        let jumlah_tagihan = 0;
         data === null || data === void 0 ? void 0 : data.kontrak.map((tagihan) => {
             jumlah_tagihan += tagihan._count.tagihan;
         });

@@ -17,7 +17,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const setoranController_1 = require("../controllers/setoranController");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
-router.get("/petugas/:petugas_id/subwilayah/:sub_wilayah_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/petugas/:petugas_id/subwilayah/:sub_wilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, setoranController_1.getSetoran)(Number(req.params.petugas_id), Number(req.params.sub_wilayah_id));
         res.status(200).json({ data: data });
@@ -27,7 +27,7 @@ router.get("/petugas/:petugas_id/subwilayah/:sub_wilayah_id", (req, res) => __aw
         res.status(500).json({ message: error });
     }
 }));
-router.post("/petugas/:petugas_id/subwilayah/:sub_wilayah_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/petugas/:petugas_id/subwilayah/:sub_wilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, setoranController_1.storeSetoran)(Number(req.params.petugas_id), Number(req.params.sub_wilayah_id), req.body);
         res.status(200).json({ data: data });
@@ -37,7 +37,7 @@ router.post("/petugas/:petugas_id/subwilayah/:sub_wilayah_id", (req, res) => __a
         res.status(500).json({ message: error });
     }
 }));
-router.put("/:setoran_id/petugas/:petugas_id/subwilayah/:sub_wilayah_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put('/:setoran_id/petugas/:petugas_id/subwilayah/:sub_wilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, setoranController_1.updateSetoran)(Number(req.params.setoran_id), Number(req.params.petugas_id), Number(req.params.sub_wilayah_id), req.body);
         res.status(200).json({ data: data });

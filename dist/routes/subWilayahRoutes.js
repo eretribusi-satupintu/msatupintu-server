@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const subWilayahController_1 = require("../controllers/subWilayahController");
 const router = express_1.default.Router();
-router.get("/petugas/:petugas_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/petugas/:petugas_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, subWilayahController_1.getSubWilayah)(Number(req.params.petugas_id));
         res.status(200).json({ data: data });

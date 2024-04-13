@@ -17,7 +17,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const atributeRetribusi_1 = __importDefault(require("../mongo/models/atributeRetribusi"));
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const getWajibRetribusi = (req) => __awaiter(void 0, void 0, void 0, function* () {
+const getWajibRetribusi = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield prisma.wajibRetribusi.findMany();
         return data;

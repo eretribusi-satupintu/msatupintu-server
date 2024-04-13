@@ -17,7 +17,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const tagihanController_1 = require("../controllers/tagihanController");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
-router.get("/wajib_retribusi/:wr_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/wajib_retribusi/:wr_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, tagihanController_1.getNewest)(Number(req.params.wr_id));
         res.status(200).json({ data: data });
@@ -46,7 +46,7 @@ router.get("/wajib_retribusi/:wr_id", (req, res) => __awaiter(void 0, void 0, vo
 //     }
 //   }
 // );
-router.get("/wajib-retribusi/:wr_id/sub-wilayah/:subwilayah_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/wajib-retribusi/:wr_id/sub-wilayah/:subwilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, tagihanController_1.getTagihanWajibRetribusi)(Number(req.params.wr_id), Number(req.params.subwilayah_id));
         res.status(200).json({ data: data });
@@ -58,7 +58,7 @@ router.get("/wajib-retribusi/:wr_id/sub-wilayah/:subwilayah_id", (req, res) => _
         });
     }
 }));
-router.get("/wajib-retribusi/:wr_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/wajib-retribusi/:wr_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, tagihanController_1.getTagihanWajibRetribusiMasyarakat)(Number(req.params.wr_id));
         res.status(200).json({ data: data });
@@ -70,7 +70,7 @@ router.get("/wajib-retribusi/:wr_id", (req, res) => __awaiter(void 0, void 0, vo
         });
     }
 }));
-router.get("/wajib-retribusi/:wr_id/kontrak/:kontrak_id/progress", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/wajib-retribusi/:wr_id/kontrak/:kontrak_id/progress', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, tagihanController_1.getTagihanWajibRetribusiMasyarakatProgress)(Number(req.params.wr_id), Number(req.params.kontrak_id));
         res.status(200).json({ data: data });
@@ -82,7 +82,7 @@ router.get("/wajib-retribusi/:wr_id/kontrak/:kontrak_id/progress", (req, res) =>
         });
     }
 }));
-router.get("/petugas/:petugas_id/sub-wilayah/:subwilayah_id/status/:status", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/petugas/:petugas_id/sub-wilayah/:subwilayah_id/status/:status', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, tagihanController_1.getPaidTagihanWajibRetribusi)(Number(req.params.petugas_id), Number(req.params.subwilayah_id), req.params.status);
         res.status(200).json({ data: data });
@@ -94,7 +94,7 @@ router.get("/petugas/:petugas_id/sub-wilayah/:subwilayah_id/status/:status", (re
         });
     }
 }));
-router.get("/:tagihan_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/:tagihan_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, tagihanController_1.getDetailTagihan)(Number(req.params.tagihan_id));
         res.status(200).json({ data: data });

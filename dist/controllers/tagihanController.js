@@ -61,7 +61,7 @@ const getTagihanWajibRetribusi = (wr_id, subwilayah_id) => __awaiter(void 0, voi
                     wajib_retribusi_id: wr_id,
                     sub_wilayah_id: subwilayah_id,
                 },
-                status: "NEW",
+                status: 'NEW',
             },
             select: {
                 id: true,
@@ -118,7 +118,7 @@ const getTagihanWajibRetribusiMasyarakat = (wr_id) => __awaiter(void 0, void 0, 
                 kontrak: {
                     wajib_retribusi_id: wr_id,
                 },
-                status: "NEW",
+                status: 'NEW',
             },
             select: {
                 id: true,

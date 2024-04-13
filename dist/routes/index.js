@@ -34,7 +34,7 @@ router.use("/auth", authenticationRoutes_1.default);
 router.use("/user", authValidationMiddleware_1.default, userRoutes_1.default);
 router.use("/item-retribusi", authValidationMiddleware_1.default, attributeRetribusiRoutes_1.default);
 router.use("/tagihan", authValidationMiddleware_1.default, tagihanRoutes_1.default);
-router.use("/paymensdfsdt", authValidationMiddleware_1.default, dokuPaymentRoutes_1.default);
+router.use("/payment", authValidationMiddleware_1.default, dokuPaymentRoutes_1.default);
 router.use("/payments", dokuPaymentRoutes_1.default);
 router.use("/pembayaran", authValidationMiddleware_1.default, pembayaranRoutes_1.default);
 router.use("/retribusi", authValidationMiddleware_1.default, retribusiRoutes_1.default);

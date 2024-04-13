@@ -16,16 +16,16 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authValidation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { authorization } = req.headers;
     if (!authorization) {
-        return res.status(401).json({ message: "Token is required" });
+        return res.status(401).json({ message: 'Token is required' });
     }
-    const token = authorization.split(" ")[1];
+    const token = authorization.split(' ')[1];
     const secret = process.env.SECRET_KEY;
     try {
         const tokenIsValid = jsonwebtoken_1.default.verify(token, secret);
         next();
     }
     catch (error) {
-        return res.status(500).json({ message: "Unauthorized" });
+        return res.status(500).json({ message: 'Unauthorized' });
     }
 });
 exports.default = authValidation;

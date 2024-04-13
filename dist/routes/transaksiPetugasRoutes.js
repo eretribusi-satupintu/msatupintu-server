@@ -17,7 +17,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const transaksiPetugasController_1 = require("../controllers/transaksiPetugasController");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
-router.get("/petugas/:petugas_id/sub-wilayah/:sub_wilayah_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/petugas/:petugas_id/sub-wilayah/:sub_wilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, transaksiPetugasController_1.getBillAmount)(Number(req.params.petugas_id), Number(req.params.sub_wilayah_id));
         res.status(200).json({ data: data });
@@ -29,7 +29,7 @@ router.get("/petugas/:petugas_id/sub-wilayah/:sub_wilayah_id", (req, res) => __a
         });
     }
 }));
-router.post("/pay/cash", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/pay/cash', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, transaksiPetugasController_1.petugasPayTagihan)(req.body);
         res.status(200).json({ data: data });
@@ -41,7 +41,7 @@ router.post("/pay/cash", (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     }
 }));
-router.post("/pay/cash/cancel", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/pay/cash/cancel', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, transaksiPetugasController_1.petugasCancelPayTagihan)(req.body.tagihan_id);
         res.status(200).json({ data: data });

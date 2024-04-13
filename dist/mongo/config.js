@@ -15,24 +15,24 @@ const mongoPassword = process.env.MONGO_PASSWORD;
 const mongoURI = `mongodb://${mongoUsername}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDatabase}?authSource=admin`;
 const dbConnection = mongoose_1.default.connection;
 // Event listener for successful connection
-dbConnection.on("connected", () => {
-    console.log("Mongoose connected to MongoDB");
+dbConnection.on('connected', () => {
+    console.log('Mongoose connected to MongoDB');
 });
 // Event listener for connection errors
-dbConnection.on("error", (err) => {
-    console.error("Mongoose connection error:", err);
+dbConnection.on('error', (err) => {
+    console.error('Mongoose connection error:', err);
 });
 // Event listener for disconnected state
-dbConnection.on("disconnected", () => {
-    console.log("Mongoose disconnected from MongoDB");
+dbConnection.on('disconnected', () => {
+    console.log('Mongoose disconnected from MongoDB');
 });
 // Connect to MongoDB
 mongoose_1.default
     .connect(mongoURI)
     .then(() => {
-    console.log("Connected to MongoDB");
+    console.log('Connected to MongoDB');
 })
     .catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
+    console.error('Error connecting to MongoDB:', err);
 });
 exports.default = mongoURI;

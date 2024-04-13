@@ -44,7 +44,7 @@ const get = () => __awaiter(void 0, void 0, void 0, function* () {
                 },
                 virtual_account: {
                     take: 1,
-                    orderBy: { created_at: "desc" },
+                    orderBy: { created_at: 'desc' },
                     select: {
                         bank: true,
                     },

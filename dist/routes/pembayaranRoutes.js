@@ -15,11 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const pembayaranController_1 = require("../controllers/pembayaranController");
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
-router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, pembayaranController_1.get)();
         if (res.statusCode !== 200) {
-            res.status(500).json({ message: "Internal Server Error" });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
         res.status(200).json({ data: data });
     }

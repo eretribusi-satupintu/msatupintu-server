@@ -32,4 +32,4 @@ const KontrakSchema = new mongoose_1.Schema({
 }, {
     versionKey: false,
 });
-exports.default = mongoose_1.default.model("kontrak", KontrakSchema);
+exports.default = mongoose_1.default.model('kontrak', KontrakSchema);

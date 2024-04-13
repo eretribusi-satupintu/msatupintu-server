@@ -17,11 +17,11 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const kontrakController_1 = require("../controllers/kontrakController");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
-router.get("/wajib-retribusi/:wr_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/wajib-retribusi/:wr_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, kontrakController_1.getItemWajibRetribusiKontrak)(Number(req.params.wr_id));
         if (res.statusCode !== 200) {
-            res.status(500).json({ message: "Internal Server Error" });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
         res.status(200).json({ data: data });
     }
@@ -32,11 +32,11 @@ router.get("/wajib-retribusi/:wr_id", (req, res) => __awaiter(void 0, void 0, vo
         });
     }
 }));
-router.get("/:kontrak_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/:kontrak_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, kontrakController_1.getKontrakDetail)(Number(req.params.kontrak_id));
         if (res.statusCode !== 200) {
-            res.status(500).json({ message: "Internal Server Error" });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
         res.status(200).json({ data: data });
     }
@@ -47,11 +47,11 @@ router.get("/:kontrak_id", (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
 }));
-router.put("/:kontrak_id/status", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put('/:kontrak_id/status', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, kontrakController_1.updateKontrakStatus)(Number(req.params.kontrak_id), req.body.status);
         if (res.statusCode !== 200) {
-            res.status(500).json({ message: "Internal Server Error" });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
         res.status(200).json({ data: data });
     }

@@ -36,6 +36,7 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(200).json(data);
     }
     catch (error) {
+        console.log(error);
         res.status(403).json(error);
     }
 }));

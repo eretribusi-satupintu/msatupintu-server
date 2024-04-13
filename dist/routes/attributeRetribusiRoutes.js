@@ -17,10 +17,10 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const attributeRetribusiController_1 = require("../controllers/attributeRetribusiController");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
-router.post("/get", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/get", (res) => __awaiter(void 0, void 0, void 0, function* () {
     // res.status(200).json({ message: "success" });
     try {
-        const data = yield (0, attributeRetribusiController_1.getWajibRetribusi)(req.body);
+        const data = yield (0, attributeRetribusiController_1.getWajibRetribusi)();
         res.status(200).json({ data: data });
     }
     catch (error) {

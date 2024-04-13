@@ -21,11 +21,11 @@ const prisma = new client_1.PrismaClient();
 dotenv_1.default.config();
 function formatISO8601(date) {
     const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDate()).padStart(2, "0");
-    const hours = String(date.getUTCHours()).padStart(2, "0");
-    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-    const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
 }
 const formatResponseToISO8601 = (inputString) => {
@@ -54,39 +54,35 @@ function adjustTimestampForWIB(timestamp) {
 }
 // Example usage
 const formattedUtcTimestamp = getFormattedUTCISO8601Timestamp();
-const formattedWibTimestamp = adjustTimestampForWIB(formattedUtcTimestamp);
 function generateDigest(jsonBody) {
-    let jsonStringHash256 = crypto_1.default.createHash("sha256").update(jsonBody).digest();
-    let bufferFromJsonStringHash256 = Buffer.from(jsonStringHash256);
-    return bufferFromJsonStringHash256.toString("base64");
+    const jsonStringHash256 = crypto_1.default.createHash('sha256').update(jsonBody).digest();
+    const bufferFromJsonStringHash256 = Buffer.from(jsonStringHash256);
+    return bufferFromJsonStringHash256.toString('base64');
 }
 function generateSignature(clientId, requestId, requestTimestamp, requestTarget, digest, secret) {
     // Prepare Signature Component
-    console.log("----- Component Signature -----");
-    let componentSignature = "Client-Id:" + clientId;
-    componentSignature += "\n";
-    componentSignature += "Request-Id:" + requestId;
-    componentSignature += "\n";
-    componentSignature += "Request-Timestamp:" + requestTimestamp;
-    componentSignature += "\n";
-    componentSignature += "Request-Target:" + requestTarget;
+    console.log('----- Component Signature -----');
+    let componentSignature = 'Client-Id:' + clientId;
+    componentSignature += '\n';
+    componentSignature += 'Request-Id:' + requestId;
+    componentSignature += '\n';
+    componentSignature += 'Request-Timestamp:' + requestTimestamp;
+    componentSignature += '\n';
+    componentSignature += 'Request-Target:' + requestTarget;
     // If body not send when access API with HTTP method GET/DELETE
     if (digest) {
-        componentSignature += "\n";
-        componentSignature += "Digest:" + digest;
+        componentSignature += '\n';
+        componentSignature += 'Digest:' + digest;
     }
     console.log(componentSignature.toString());
     // return componentSignature;
     // Calculate HMAC-SHA256 base64 from all the components above
-    let hmac256Value = crypto_1.default
-        .createHmac("sha256", secret)
-        .update(componentSignature.toString())
-        .digest();
-    let bufferFromHmac256Value = Buffer.from(hmac256Value);
-    let signature = bufferFromHmac256Value.toString("base64");
+    const hmac256Value = crypto_1.default.createHmac('sha256', secret).update(componentSignature.toString()).digest();
+    const bufferFromHmac256Value = Buffer.from(hmac256Value);
+    const signature = bufferFromHmac256Value.toString('base64');
     // Prepend encoded result with algorithm info HMACSHA256=
     // return componentSignature;
-    return "HMACSHA256=" + signature;
+    return 'HMACSHA256=' + signature;
 }
 const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -94,15 +90,15 @@ const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, v
         const clientId = process.env.DOKU_CLIENT_ID;
         const requestId = request_id;
         const requestTimestamp = formattedUtcTimestamp;
-        const requestTarget = "/" + bank + "-virtual-account/v2/payment-code";
+        const requestTarget = '/' + bank + '-virtual-account/v2/payment-code';
         const secret = process.env.DOKU_SECRET_KEY;
         const body = req;
         const digest = generateDigest(JSON.stringify(body));
         const headers = {
-            "Content-Type": "application/json",
-            "Client-Id": clientId,
-            "Request-Id": requestId,
-            "Request-Timestamp": requestTimestamp,
+            'Content-Type': 'application/json',
+            'Client-Id': clientId,
+            'Request-Id': requestId,
+            'Request-Timestamp': requestTimestamp,
             Signature: generateSignature(clientId, requestId, requestTimestamp, requestTarget, digest, secret),
         };
         const data = yield axios_1.default.post(apiUrl + requestTarget, body, { headers });
@@ -114,8 +110,8 @@ const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, v
             data: {
                 tagihan_id: 1,
                 petugas_id: 1,
-                metode_pembayaran: "VA",
-                status: "WAITING",
+                metode_pembayaran: 'VA',
+                status: 'WAITING',
                 virtual_account: {
                     create: [
                         {
@@ -127,7 +123,7 @@ const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, v
                             expired_date: formatResponseToISO8601(data.data.virtual_account_info.expired_date),
                             created_date_utc: data.data.virtual_account_info.created_date_utc,
                             expired_date_utc: data.data.virtual_account_info.expired_date_utc,
-                            status: "WAITING",
+                            status: 'WAITING',
                         },
                     ],
                 },
@@ -162,11 +158,11 @@ const showVirtualAccount = (req) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const notificationHeader = req.headers;
         const notificationBody = req.body;
-        const notificationPath = "/api/payments/notifications"; // Adjust according to your notification path
-        const secretKey = process.env.DOKU_SECRET_KEY;
+        const notificationPath = '/api/payments/notifications'; // Adjust according to your notification path
+        // const secretKey = process.env.DOKU_SECRET_KEY;
         const finalDigest = generateDigest(JSON.stringify(notificationBody));
         // const finalSignature = "";
-        const finalSignature = generateSignature(notificationHeader["client-id"], notificationHeader["request-id"], notificationHeader["request-timestamp"], notificationPath, finalDigest, `SK-R6u3CUutJ2msMLOJpRN5`);
+        const finalSignature = generateSignature(notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, finalDigest, `SK-R6u3CUutJ2msMLOJpRN5`);
         if (finalSignature === notificationHeader.signature) {
             const vaData = prisma.virtualAccount.updateMany({
                 where: {
@@ -176,7 +172,7 @@ const showVirtualAccount = (req) => __awaiter(void 0, void 0, void 0, function* 
                     status: req.body.virtual_account_info.status,
                 },
             });
-            return { status: "OK" };
+            return { status: 'OK' };
             // TODO: Do update the transaction status based on the `transaction.status`
         }
         else {
