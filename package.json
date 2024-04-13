@@ -58,7 +58,8 @@
       "pre-commit": [
         "ts.check",
         "build",
-        "add-build"
+        "add-build",
+        "echo ”[Husky] pre-commit”"
       ]
     }
   }
