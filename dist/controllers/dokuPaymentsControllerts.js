@@ -79,7 +79,7 @@ const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, v
         const apiUrl = process.env.DOKU_VA_BASE_URL;
         const clientId = process.env.DOKU_CLIENT_ID;
         const requestId = request_id;
-        const requestTimestamp = formattedWibTimestamp;
+        const requestTimestamp = formattedUtcTimestamp;
         const requestTarget = '/' + bank + '-virtual-account/v2/payment-code';
         const secret = process.env.DOKU_SECRET_KEY;
         const body = req;
