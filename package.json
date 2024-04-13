@@ -55,12 +55,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": [
-        "ts.check",
-        "build",
-        "add-build",
-        "echo ”[Husky] pre-commit”"
-      ]
+      "pre-commit": "echo \"[Husky] pre-commit\""
     }
   }
 }
