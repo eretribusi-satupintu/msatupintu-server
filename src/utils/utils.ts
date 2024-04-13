@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import bcrypt from 'bcryptjs';
 
 const hashPassword = async (password: string) => {
   try {
@@ -10,10 +10,7 @@ const hashPassword = async (password: string) => {
   }
 };
 
-const checkPassword = async (
-  password: string,
-  hash: string
-): Promise<boolean> => {
+const checkPassword = async (password: string, hash: string): Promise<boolean> => {
   return await bcrypt.compare(password, hash);
 };
 

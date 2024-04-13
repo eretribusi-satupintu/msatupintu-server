@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
-import ItemRetribusi from "../mongo/models/atributeRetribusi";
-import { IItemRetribusi, IWajibRetribusi } from "../types";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response } from 'express';
+import mongoose from 'mongoose';
+import ItemRetribusi from '../mongo/models/atributeRetribusi';
+import { IItemRetribusi, IWajibRetribusi } from '../types';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 

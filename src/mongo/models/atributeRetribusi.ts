@@ -1,5 +1,5 @@
-import mongoose, { Document, Schema } from "mongoose";
-import { IItemRetribusi } from "../../types";
+import mongoose, { Document, Schema } from 'mongoose';
+import { IItemRetribusi } from '../../types';
 
 export interface IItemRetribuiModel extends IItemRetribusi, Document {}
 const ItemRetribusiSchema: Schema = new Schema(
@@ -11,10 +11,7 @@ const ItemRetribusiSchema: Schema = new Schema(
   },
   {
     versionKey: false,
-  }
+  },
 );
 
-export default mongoose.model<IItemRetribuiModel>(
-  "ItemRetribusi",
-  ItemRetribusiSchema
-);
+export default mongoose.model<IItemRetribuiModel>('ItemRetribusi', ItemRetribusiSchema);

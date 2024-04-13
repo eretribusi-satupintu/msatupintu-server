@@ -8,10 +8,10 @@ const router = express.Router();
 
 router.use(bodyParser.json());
 
-router.post("/get", async (req: Request, res: Response) => {
+router.post("/get", async (res: Response) => {
   // res.status(200).json({ message: "success" });
   try {
-    const data = await getWajibRetribusi(req.body);
+    const data = await getWajibRetribusi();
     res.status(200).json({ data: data });
   } catch (error) {
     console.log(error);

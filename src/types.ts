@@ -1,5 +1,5 @@
-import { LokasiSetoran, StatusSetoran } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
+import { LokasiSetoran } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
 
 export interface User {
   name: string;

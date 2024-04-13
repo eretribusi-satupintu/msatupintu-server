@@ -1,12 +1,9 @@
-import { PrismaClient } from "@prisma/client";
-import Kontrak from "../mongo/models/Kontrak";
+import { PrismaClient } from '@prisma/client';
+import Kontrak from '../mongo/models/Kontrak';
 
 const prisma = new PrismaClient();
 
-export const getWajibRetribusi = async (
-  petugas_id: number,
-  sub_wilayah_id: number
-) => {
+export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: number) => {
   try {
     const data = await prisma.wajibRetribusi.findMany({
       where: {
@@ -66,10 +63,7 @@ export const getWajibRetribusi = async (
   }
 };
 
-export const getWajibRetribusiDetail = async (
-  wr_id: number,
-  sub_wilayah_id: number
-) => {
+export const getWajibRetribusiDetail = async (wr_id: number, sub_wilayah_id: number) => {
   try {
     const data = await prisma.wajibRetribusi.findUnique({
       where: {
@@ -90,7 +84,7 @@ export const getWajibRetribusiDetail = async (
               select: {
                 tagihan: {
                   where: {
-                    status: "NEW",
+                    status: 'NEW',
                   },
                 },
               },
@@ -100,7 +94,7 @@ export const getWajibRetribusiDetail = async (
       },
     });
 
-    var jumlah_tagihan = 0;
+    let jumlah_tagihan = 0;
 
     data?.kontrak.map((tagihan) => {
       jumlah_tagihan += tagihan._count.tagihan;
@@ -121,10 +115,7 @@ export const getWajibRetribusiDetail = async (
   }
 };
 
-export const getWajibRetribusiKontrak = async (
-  wajib_retribusi_id: number,
-  sub_wilayah_id: number
-) => {
+export const getWajibRetribusiKontrak = async (wajib_retribusi_id: number, sub_wilayah_id: number) => {
   try {
     const data = prisma.kontrak.findMany({
       where: {

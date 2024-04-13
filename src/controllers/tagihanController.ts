@@ -1,5 +1,5 @@
-import { PrismaClient, StatusBayar } from "@prisma/client";
-import { ITagihanStatus } from "../types";
+import { PrismaClient, StatusBayar } from '@prisma/client';
+import { ITagihanStatus } from '../types';
 
 const prisma = new PrismaClient();
 
@@ -45,10 +45,7 @@ export const getNewest = async (wr_id: number) => {
   }
 };
 
-export const getTagihanWajibRetribusi = async (
-  wr_id: number,
-  subwilayah_id: number
-) => {
+export const getTagihanWajibRetribusi = async (wr_id: number, subwilayah_id: number) => {
   try {
     const data = await prisma.tagihan.findMany({
       where: {
@@ -56,7 +53,7 @@ export const getTagihanWajibRetribusi = async (
           wajib_retribusi_id: wr_id,
           sub_wilayah_id: subwilayah_id,
         },
-        status: "NEW",
+        status: 'NEW',
       },
       select: {
         id: true,
@@ -113,7 +110,7 @@ export const getTagihanWajibRetribusiMasyarakat = async (wr_id: number) => {
         kontrak: {
           wajib_retribusi_id: wr_id,
         },
-        status: "NEW",
+        status: 'NEW',
       },
       select: {
         id: true,
@@ -163,10 +160,7 @@ export const getTagihanWajibRetribusiMasyarakat = async (wr_id: number) => {
   }
 };
 
-export const getTagihanWajibRetribusiMasyarakatProgress = async (
-  wr_id: number,
-  kontrak_id: number
-) => {
+export const getTagihanWajibRetribusiMasyarakatProgress = async (wr_id: number, kontrak_id: number) => {
   try {
     const data = await prisma.tagihan.findMany({
       where: {
@@ -223,11 +217,7 @@ export const getTagihanWajibRetribusiMasyarakatProgress = async (
   }
 };
 
-export const getPaidTagihanWajibRetribusi = async (
-  petugas_id: number,
-  subwilayah_id: number,
-  status: StatusBayar
-) => {
+export const getPaidTagihanWajibRetribusi = async (petugas_id: number, subwilayah_id: number, status: StatusBayar) => {
   try {
     const data = await prisma.tagihan.findMany({
       where: {

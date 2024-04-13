@@ -1,14 +1,14 @@
-import { get } from "../controllers/pembayaranController";
-import express, { Request, Response } from "express";
+import { get } from '../controllers/pembayaranController';
+import express, { Request, Response } from 'express';
 
 const router = express.Router();
 
-router.get("/", async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const data = await get();
 
     if (res.statusCode !== 200) {
-      res.status(500).json({ message: "Internal Server Error" });
+      res.status(500).json({ message: 'Internal Server Error' });
     }
 
     res.status(200).json({ data: data });

@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
-import jwt, { Secret } from "jsonwebtoken";
-import "dotenv/config";
-import { User } from "../types";
-import { hashPassword, checkPassword } from "../utils/utils";
+import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
+import 'dotenv/config';
+import { User } from '../types';
+import { hashPassword, checkPassword } from '../utils/utils';
 
 const prisma = new PrismaClient();
 
@@ -24,7 +24,7 @@ const register = async (req: User) => {
       },
     });
 
-    return { message: "user created succesfully", user: data };
+    return { message: 'user created succesfully', user: data };
   } catch (error) {
     throw error;
   }
@@ -51,11 +51,11 @@ const login = async (req: User) => {
     });
 
     if (user === null) {
-      throw { message: "Akun anda tidak terdaftar" };
+      throw { message: 'Akun anda tidak terdaftar' };
     }
 
     if (!(await checkPassword(req.password, user!.password))) {
-      throw { message: "Password anda salah" };
+      throw { message: 'Password anda salah' };
     }
 
     // const { id, password, ...userData } = user;
@@ -78,14 +78,14 @@ const login = async (req: User) => {
 
     if (user.wajib_retribusi !== null) {
       return {
-        message: "authenticated",
+        message: 'authenticated',
         data: { ...userData, role: user.wajib_retribusi, token },
       };
     }
 
     if (user.petugas !== null) {
       return {
-        message: "authenticated",
+        message: 'authenticated',
         data: { ...userData, role: user.petugas, token },
       };
     }
@@ -108,19 +108,19 @@ const checkEmail = async (email: string) => {
   if (checkEmail) {
     return {
       status: true,
-      message: "email has been taken",
+      message: 'email has been taken',
     };
   }
 
   return {
     status: false,
-    message: "Email can be use",
+    message: 'Email can be use',
   };
 };
 
 const logout = async () => {
   return {
-    message: "Logout Successfully",
+    message: 'Logout Successfully',
   };
 };
 export { register, login, logout };

@@ -1,19 +1,17 @@
-import { PrismaClient } from "@prisma/client";
-import { ITransaksiPetugas } from "../types";
-import { getDetailTagihan } from "./tagihanController";
+import { PrismaClient } from '@prisma/client';
+import { ITransaksiPetugas } from '../types';
+import { getDetailTagihan } from './tagihanController';
 
 const prisma = new PrismaClient();
 
-export const petugasPayTagihan = async (
-  transaksiPetugas: ITransaksiPetugas
-) => {
+export const petugasPayTagihan = async (transaksiPetugas: ITransaksiPetugas) => {
   try {
     const tagihan = await prisma.tagihan.update({
       where: {
         id: transaksiPetugas.tagihan_id,
       },
       data: {
-        status: "VERIFIED",
+        status: 'VERIFIED',
       },
     });
 
@@ -22,7 +20,7 @@ export const petugasPayTagihan = async (
         petugas_id: transaksiPetugas.petugas_id,
         tagihan_id: tagihan.id,
         nominal: tagihan.total_harga,
-        status: "VERIFIED",
+        status: 'VERIFIED',
       },
     });
 
@@ -41,7 +39,7 @@ export const petugasCancelPayTagihan = async (tagihan_id: number) => {
         id: tagihan_id,
       },
       data: {
-        status: "REQUEST",
+        status: 'REQUEST',
       },
       include: {
         TransaksiPetugas: true,
@@ -53,7 +51,7 @@ export const petugasCancelPayTagihan = async (tagihan_id: number) => {
         id: tagihan.TransaksiPetugas!.id,
       },
       data: {
-        status: "REQUEST",
+        status: 'REQUEST',
       },
     });
 
@@ -65,16 +63,13 @@ export const petugasCancelPayTagihan = async (tagihan_id: number) => {
   }
 };
 
-export const getBillAmount = async (
-  petugas_id: number,
-  sub_wilayah_id: number
-) => {
+export const getBillAmount = async (petugas_id: number, sub_wilayah_id: number) => {
   try {
     const totalTagiahn = await prisma.transaksiPetugas.findMany({
       where: {
         petugas_id: petugas_id,
         disetor: false,
-        status: "VERIFIED",
+        status: 'VERIFIED',
         AND: {
           tagihan: {
             kontrak: {

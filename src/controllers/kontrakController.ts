@@ -1,4 +1,4 @@
-import { PrismaClient, StatusKontrak } from "@prisma/client";
+import { PrismaClient, StatusKontrak } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -87,10 +87,7 @@ export const getKontrakDetail = async (kontrak_id: number) => {
   }
 };
 
-export const updateKontrakStatus = async (
-  kontrak_id: number,
-  status: StatusKontrak
-) => {
+export const updateKontrakStatus = async (kontrak_id: number, status: StatusKontrak) => {
   const data = prisma.kontrak.update({
     where: {
       id: kontrak_id,

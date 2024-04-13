@@ -1,13 +1,10 @@
-import { ISetoran } from "../types";
-import { PrismaClient } from "@prisma/client";
-import { converBase64ToImage } from "convert-base64-to-image";
+import { ISetoran } from '../types';
+import { PrismaClient } from '@prisma/client';
+import { converBase64ToImage } from 'convert-base64-to-image';
 
 const prisma = new PrismaClient();
 
-export const getSetoran = async (
-  petugas_id: number,
-  sub_wilayah_id: number
-) => {
+export const getSetoran = async (petugas_id: number, sub_wilayah_id: number) => {
   try {
     const setoran = prisma.setoran.findMany({
       where: {
@@ -32,15 +29,11 @@ export const getSetoran = async (
   }
 };
 
-export const storeSetoran = async (
-  petugas_id: number,
-  sub_wilayah_id: number,
-  req: ISetoran
-) => {
+export const storeSetoran = async (petugas_id: number, sub_wilayah_id: number, req: ISetoran) => {
   try {
-    const base64 = "data:image/png;base64," + req.bukti_penyetoran;
+    const base64 = 'data:image/png;base64,' + req.bukti_penyetoran;
     const date_time = new Date(req.waktu_penyetoran).toISOString();
-    const pathToSaveImage = "public/assets/" + date_time + "-image1.png";
+    const pathToSaveImage = 'public/assets/' + date_time + '-image1.png';
     converBase64ToImage(base64, pathToSaveImage);
 
     const setoran = await prisma.setoran.create({
@@ -52,7 +45,7 @@ export const storeSetoran = async (
         bukti_penyetoran: pathToSaveImage,
         lokasi_penyetoran: req.lokasi_penyetoran,
         keterangan: req.keterangan,
-        status: "MENUNGGU",
+        status: 'MENUNGGU',
       },
     });
 
@@ -63,19 +56,14 @@ export const storeSetoran = async (
   }
 };
 
-export const updateSetoran = async (
-  setoran_id: number,
-  petugas_id: number,
-  sub_wilayah_id: number,
-  req: ISetoran
-) => {
+export const updateSetoran = async (setoran_id: number, petugas_id: number, sub_wilayah_id: number, req: ISetoran) => {
   try {
     const date_time = new Date(req.waktu_penyetoran).toISOString();
 
-    var pathToSaveImage = null;
-    if (req.bukti_penyetoran !== "") {
-      const base64 = "data:image/png;base64," + req.bukti_penyetoran;
-      pathToSaveImage = "public/assets/" + date_time + "-image1.png";
+    let pathToSaveImage = null;
+    if (req.bukti_penyetoran !== '') {
+      const base64 = 'data:image/png;base64,' + req.bukti_penyetoran;
+      pathToSaveImage = 'public/assets/' + date_time + '-image1.png';
       converBase64ToImage(base64, pathToSaveImage);
     }
 
@@ -86,7 +74,7 @@ export const updateSetoran = async (
     });
 
     if (findSetoran == null) {
-      throw "id: " + setoran_id;
+      throw 'id: ' + setoran_id;
     }
 
     const setoran = await prisma.setoran.update({
@@ -101,7 +89,7 @@ export const updateSetoran = async (
         bukti_penyetoran: pathToSaveImage ?? findSetoran.bukti_penyetoran,
         lokasi_penyetoran: req.lokasi_penyetoran,
         keterangan: req.keterangan,
-        status: "MENUNGGU",
+        status: 'MENUNGGU',
       },
     });
 

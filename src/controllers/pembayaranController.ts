@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -23,7 +23,7 @@ export const get = async () => {
         },
         virtual_account: {
           take: 1,
-          orderBy: { created_at: "desc" },
+          orderBy: { created_at: 'desc' },
           select: {
             bank: true,
           },

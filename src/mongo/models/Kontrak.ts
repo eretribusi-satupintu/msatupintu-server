@@ -1,5 +1,5 @@
-import mongoose, { Document, Schema } from "mongoose";
-import { IKontrak } from "../../types";
+import mongoose, { Document, Schema } from 'mongoose';
+import { IKontrak } from '../../types';
 
 export interface IKontrakModel extends IKontrak, Document {}
 const KontrakSchema: Schema = new Schema(
@@ -11,7 +11,7 @@ const KontrakSchema: Schema = new Schema(
   },
   {
     versionKey: false,
-  }
+  },
 );
 
-export default mongoose.model<IKontrakModel>("kontrak", KontrakSchema);
+export default mongoose.model<IKontrakModel>('kontrak', KontrakSchema);

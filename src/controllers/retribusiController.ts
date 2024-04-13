@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -90,10 +90,7 @@ export const getSewaWajibRetribusi = async (wr_id: number) => {
   }
 };
 
-export const getItemWajibRetribusiKontrak = async (
-  wr_id: number,
-  retribusi_id: number
-) => {
+export const getItemWajibRetribusiKontrak = async (wr_id: number, retribusi_id: number) => {
   try {
     const data = await prisma.kontrak.findMany({
       where: {

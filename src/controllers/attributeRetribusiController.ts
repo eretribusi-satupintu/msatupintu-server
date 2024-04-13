@@ -1,12 +1,11 @@
-import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import ItemRetribusi from "../mongo/models/atributeRetribusi";
-import { IItemRetribusi, IWajibRetribusi } from "../types";
+import { IItemRetribusi } from "../types";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const getWajibRetribusi = async (req: any) => {
+const getWajibRetribusi = async () => {
   try {
     const data = await prisma.wajibRetribusi.findMany();
     return data;

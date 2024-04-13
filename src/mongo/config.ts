@@ -1,6 +1,6 @@
 // config/mongo.ts
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -15,28 +15,28 @@ const mongoURI = `mongodb://${mongoUsername}:${mongoPassword}@${mongoHost}:${mon
 const dbConnection = mongoose.connection;
 
 // Event listener for successful connection
-dbConnection.on("connected", () => {
-  console.log("Mongoose connected to MongoDB");
+dbConnection.on('connected', () => {
+  console.log('Mongoose connected to MongoDB');
 });
 
 // Event listener for connection errors
-dbConnection.on("error", (err) => {
-  console.error("Mongoose connection error:", err);
+dbConnection.on('error', (err) => {
+  console.error('Mongoose connection error:', err);
 });
 
 // Event listener for disconnected state
-dbConnection.on("disconnected", () => {
-  console.log("Mongoose disconnected from MongoDB");
+dbConnection.on('disconnected', () => {
+  console.log('Mongoose disconnected from MongoDB');
 });
 
 // Connect to MongoDB
 mongoose
   .connect(mongoURI)
   .then(() => {
-    console.log("Connected to MongoDB");
+    console.log('Connected to MongoDB');
   })
   .catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
+    console.error('Error connecting to MongoDB:', err);
   });
 
 export default mongoURI;
