@@ -26,29 +26,26 @@ const formatResponseToISO8601 = (inputString: string): string => {
   const minutes = inputString.slice(10, 12);
   const seconds = inputString.slice(12, 14);
 
-  // Create a Date object using the extracted components
   const isoDateString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 
-  // Convert to ISO-8601 DateTime format
   const isoDateTime = new Date(isoDateString).toISOString();
 
   return isoDateTime;
 };
-// Get the current UTC timestamp in "yyyy-MM-ddTh:m:sZ" format
 function getFormattedUTCISO8601Timestamp(): string {
   const now = new Date();
   return formatISO8601(now);
 }
 
-// Adjust the timestamp for UTC+7 (WIB)
 function adjustTimestampForWIB(timestamp: string): string {
   const originalDate = new Date(timestamp);
-  const adjustedDate = new Date(originalDate.getTime() - 7 * 60 * 60 * 1000); // Subtract 7 hours in milliseconds
+  const adjustedDate = new Date(originalDate.getTime() - 7 * 60 * 60 * 1000);
   return formatISO8601(adjustedDate);
 }
 
-// Example usage
 const formattedUtcTimestamp: string = getFormattedUTCISO8601Timestamp();
+
+const formattedWibTimestamp: string = adjustTimestampForWIB(formattedUtcTimestamp);
 
 function generateDigest(jsonBody: string) {
   const jsonStringHash256 = crypto.createHash('sha256').update(jsonBody).digest();
@@ -58,7 +55,6 @@ function generateDigest(jsonBody: string) {
 }
 
 function generateSignature(clientId: String, requestId: String, requestTimestamp: String, requestTarget: String, digest: String, secret: any) {
-  // Prepare Signature Component
   console.log('----- Component Signature -----');
   let componentSignature = 'Client-Id:' + clientId;
   componentSignature += '\n';
@@ -73,15 +69,11 @@ function generateSignature(clientId: String, requestId: String, requestTimestamp
     componentSignature += 'Digest:' + digest;
   }
 
-  console.log(componentSignature.toString());
-  // return componentSignature;
-  // Calculate HMAC-SHA256 base64 from all the components above
   const hmac256Value = crypto.createHmac('sha256', secret).update(componentSignature.toString()).digest();
 
   const bufferFromHmac256Value = Buffer.from(hmac256Value);
   const signature = bufferFromHmac256Value.toString('base64');
-  // Prepend encoded result with algorithm info HMACSHA256=
-  // return componentSignature;
+
   return 'HMACSHA256=' + signature;
 }
 
@@ -90,7 +82,7 @@ const getVirtualAccount = async (request_id: string, req: IVirtualAccountnumberR
     const apiUrl = process.env.DOKU_VA_BASE_URL;
     const clientId = process.env.DOKU_CLIENT_ID;
     const requestId = request_id;
-    const requestTimestamp = formattedUtcTimestamp;
+    const requestTimestamp = formattedWibTimestamp;
     const requestTarget = '/' + bank + '-virtual-account/v2/payment-code';
     const secret = process.env.DOKU_SECRET_KEY;
     const body = req;
@@ -108,8 +100,6 @@ const getVirtualAccount = async (request_id: string, req: IVirtualAccountnumberR
 
     if (data.status != 200) {
       throw data;
-
-      // throw "Permintaan anda tidak dapat ditanggapi, silahkan coba lagi nanti";
     }
 
     const storeData = await prisma.pembayaran.create({
@@ -157,7 +147,6 @@ const getVirtualAccount = async (request_id: string, req: IVirtualAccountnumberR
     console.log({ error: (error as any).response });
 
     throw (error as any).response.data.error.message;
-    // throw "Permintaan anda tidak dapat ditanggapi, silahkan coba lagi nanti";
   }
 };
 
@@ -166,11 +155,9 @@ const showVirtualAccount = async (req: any) => {
   try {
     const notificationHeader = req.headers;
     const notificationBody = req.body;
-    const notificationPath = '/api/payments/notifications'; // Adjust according to your notification path
-    // const secretKey = process.env.DOKU_SECRET_KEY;
+    const notificationPath = '/api/payments/notifications';
 
     const finalDigest = generateDigest(JSON.stringify(notificationBody));
-    // const finalSignature = "";
 
     const finalSignature = generateSignature(
       notificationHeader['client-id'],
