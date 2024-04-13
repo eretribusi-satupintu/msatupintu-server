@@ -2,7 +2,7 @@
 docker compose -f docker-compose.dev.yaml up -d --build
 
 # remove compose
-docker compose -p mserver down
+docker compose -p mserver-new down
 
 # execute prisma command to container from host
 docker exec -it container-name bash
