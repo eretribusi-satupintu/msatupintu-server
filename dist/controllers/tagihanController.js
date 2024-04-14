@@ -20,33 +20,48 @@ const getNewest = (wr_id) => __awaiter(void 0, void 0, void 0, function* () {
                     wajib_retribusi_id: wr_id,
                 },
             },
-            include: {
+            select: {
+                id: true,
+                request_id: true,
+                invoice_id: true,
+                nama: true,
+                jatuh_tempo: true,
+                status: true,
+                total_harga: true,
                 kontrak: {
-                    include: {
+                    select: {
                         wajib_retribusi: {
-                            include: {
-                                users: true,
+                            select: {
+                                users: {
+                                    select: {
+                                        name: true,
+                                        phone_number: true,
+                                        email: true,
+                                    },
+                                },
+                            },
+                        },
+                        item_retribusi: {
+                            select: {
+                                kategori_nama: true,
+                                jenis_tagihan: true,
+                                retribusi: {
+                                    select: {
+                                        nama: true,
+                                        kedinasan: {
+                                            select: {
+                                                nama: true,
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                     },
                 },
             },
         });
-        const tagihanData = data.map((tagihan) => {
-            return {
-                id: tagihan.id,
-                kontrak_id: tagihan.kontrak_id,
-                nama: tagihan.nama,
-                name: tagihan.kontrak.wajib_retribusi.users.name,
-                email: tagihan.kontrak.wajib_retribusi.users.email,
-                invoice_number: tagihan.invoice_id,
-                request_id: tagihan.request_id,
-                total_harga: tagihan.total_harga,
-                jatuh_tempo: tagihan.jatuh_tempo,
-                status: tagihan.status,
-            };
-        });
-        return tagihanData;
+        return data;
     }
     catch (error) {
         throw error;

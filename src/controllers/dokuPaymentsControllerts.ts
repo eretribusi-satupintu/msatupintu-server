@@ -68,14 +68,57 @@ function generateSignature(clientId: String, requestId: String, requestTimestamp
     componentSignature += '\n';
     componentSignature += 'Digest:' + digest;
   }
-
+  // return secret;
   const hmac256Value = crypto.createHmac('sha256', secret).update(componentSignature.toString()).digest();
-
+  // return hmac256Value;
   const bufferFromHmac256Value = Buffer.from(hmac256Value);
+  // return;
   const signature = bufferFromHmac256Value.toString('base64');
 
   return 'HMACSHA256=' + signature;
 }
+
+const generateXSignature = (secretKey: string, stringToSign: string) => {
+  const signer = crypto.createSign('sha256');
+  signer.update(stringToSign);
+  signer.end();
+
+  const signature = signer.sign(secretKey, 'base64');
+  return signature;
+
+  // let bufferFromJsonStringSign = Buffer.from(jsonStringSign);
+  // return bufferFromJsonStringSign.toString('base64');
+};
+
+const getToken = async () => {
+  try {
+    const apiUrl = process.env.DOKU_VA_BASE_URL;
+    const clientId = process.env.DOKU_CLIENT_ID;
+    const secretKey = process.env.DOKU_SECRET_KEY;
+    const signature = generateXSignature(secretKey!, `${clientId}|${formattedWibTimestamp}`);
+    const requestTarget = '/authorization/v1/access-token/b2b';
+    const body = {
+      grantType: 'BRN-0251-1709171991384',
+      additionalInfo: '',
+    };
+
+    const headers = {
+      'X-SIGNATURE': signature,
+      'X-TIMESTAMP': formattedWibTimestamp,
+      'X-CLIENT-KEY': process.env.DOKU_SECRET_KEY,
+    };
+    const data = await axios.post(apiUrl! + requestTarget, body, { headers });
+
+    if (data.status != 200) {
+      throw data;
+    }
+    return data.data;
+  } catch (error) {
+    console.log({ error: error });
+
+    throw (error as any).response;
+  }
+};
 
 const getVirtualAccount = async (request_id: string, req: IVirtualAccountnumberRequest, bank: string) => {
   try {
@@ -152,11 +195,15 @@ const getVirtualAccount = async (request_id: string, req: IVirtualAccountnumberR
 
 const showVirtualAccount = async (req: any) => {
   // return req.headers;
+  // return req.headers.signature;
   try {
     const notificationHeader = req.headers;
     const notificationBody = req.body;
     const notificationPath = '/api/payments/notifications';
+    const dokuKey = process.env.DOKU_SECRET_KEY;
 
+    // return [notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, dokuKey];
+    // return generateDigest(JSON.stringify(notificationBody));
     const finalDigest = generateDigest(JSON.stringify(notificationBody));
 
     const finalSignature = generateSignature(
@@ -165,10 +212,12 @@ const showVirtualAccount = async (req: any) => {
       notificationHeader['request-timestamp'],
       notificationPath,
       finalDigest,
-      `SK-R6u3CUutJ2msMLOJpRN5`,
+      dokuKey,
     );
 
-    if (finalSignature === notificationHeader.signature) {
+    // return finalSignature;
+
+    if (finalSignature == notificationHeader.signature) {
       const vaData = prisma.virtualAccount.updateMany({
         where: {
           virtual_account_number: req.body.virtual_account_info.virtual_account_number,
@@ -190,8 +239,8 @@ const showVirtualAccount = async (req: any) => {
     }
   } catch (error) {
     console.log({ error: error });
-    throw error;
+    throw (error as any).response.data.error.message;
   }
 };
 
-export { getVirtualAccount, showVirtualAccount };
+export { getToken, getVirtualAccount, showVirtualAccount };

@@ -17,7 +17,21 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const dokuPaymentsControllerts_1 = require("../controllers/dokuPaymentsControllerts");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
-router.post("/virtual-account", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/token', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // res.status(200).json({ data: req.body.payment_order });
+        const data = yield (0, dokuPaymentsControllerts_1.getToken)();
+        console.log({ routes: data });
+        res.status(200).json({ data: data });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: err,
+        });
+    }
+}));
+router.post('/virtual-account', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // res.status(200).json({ data: req.body.payment_order });
         const data = yield (0, dokuPaymentsControllerts_1.getVirtualAccount)(req.body.request_id, req.body.payment_order, req.body.bank);
@@ -31,7 +45,7 @@ router.post("/virtual-account", (req, res) => __awaiter(void 0, void 0, void 0, 
         });
     }
 }));
-router.post("/notifications", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/notifications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, dokuPaymentsControllerts_1.showVirtualAccount)(req);
         console.log({ hasil: data });
@@ -44,7 +58,7 @@ router.post("/notifications", (req, res) => __awaiter(void 0, void 0, void 0, fu
         });
     }
 }));
-router.post("/notifications/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json({ status: "OK" });
+router.post('/notifications/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.status(200).json({ status: 'OK' });
 }));
 exports.default = router;

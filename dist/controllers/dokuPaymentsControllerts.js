@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.showVirtualAccount = exports.getVirtualAccount = void 0;
+exports.showVirtualAccount = exports.getVirtualAccount = exports.getToken = void 0;
 const client_1 = require("@prisma/client");
 const axios_1 = __importDefault(require("axios"));
 const crypto_1 = __importDefault(require("crypto"));
@@ -69,11 +69,51 @@ function generateSignature(clientId, requestId, requestTimestamp, requestTarget,
         componentSignature += '\n';
         componentSignature += 'Digest:' + digest;
     }
+    // return secret;
     const hmac256Value = crypto_1.default.createHmac('sha256', secret).update(componentSignature.toString()).digest();
+    // return hmac256Value;
     const bufferFromHmac256Value = Buffer.from(hmac256Value);
+    // return;
     const signature = bufferFromHmac256Value.toString('base64');
     return 'HMACSHA256=' + signature;
 }
+const generateXSignature = (secretKey, stringToSign) => {
+    const signer = crypto_1.default.createSign('sha256');
+    signer.update(stringToSign);
+    signer.end();
+    const signature = signer.sign(secretKey, 'base64');
+    return signature;
+    // let bufferFromJsonStringSign = Buffer.from(jsonStringSign);
+    // return bufferFromJsonStringSign.toString('base64');
+};
+const getToken = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const apiUrl = process.env.DOKU_VA_BASE_URL;
+        const clientId = process.env.DOKU_CLIENT_ID;
+        const secretKey = process.env.DOKU_SECRET_KEY;
+        const signature = generateXSignature(secretKey, `${clientId}|${formattedWibTimestamp}`);
+        const requestTarget = '/authorization/v1/access-token/b2b';
+        const body = {
+            grantType: 'BRN-0251-1709171991384',
+            additionalInfo: '',
+        };
+        const headers = {
+            'X-SIGNATURE': signature,
+            'X-TIMESTAMP': formattedWibTimestamp,
+            'X-CLIENT-KEY': process.env.DOKU_SECRET_KEY,
+        };
+        const data = yield axios_1.default.post(apiUrl + requestTarget, body, { headers });
+        if (data.status != 200) {
+            throw data;
+        }
+        return data.data;
+    }
+    catch (error) {
+        console.log({ error: error });
+        throw error.response;
+    }
+});
+exports.getToken = getToken;
 const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const apiUrl = process.env.DOKU_VA_BASE_URL;
@@ -143,13 +183,18 @@ const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, v
 exports.getVirtualAccount = getVirtualAccount;
 const showVirtualAccount = (req) => __awaiter(void 0, void 0, void 0, function* () {
     // return req.headers;
+    // return req.headers.signature;
     try {
         const notificationHeader = req.headers;
         const notificationBody = req.body;
         const notificationPath = '/api/payments/notifications';
+        const dokuKey = process.env.DOKU_SECRET_KEY;
+        // return [notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, dokuKey];
+        // return generateDigest(JSON.stringify(notificationBody));
         const finalDigest = generateDigest(JSON.stringify(notificationBody));
-        const finalSignature = generateSignature(notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, finalDigest, `SK-R6u3CUutJ2msMLOJpRN5`);
-        if (finalSignature === notificationHeader.signature) {
+        const finalSignature = generateSignature(notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, finalDigest, dokuKey);
+        // return finalSignature;
+        if (finalSignature == notificationHeader.signature) {
             const vaData = prisma.virtualAccount.updateMany({
                 where: {
                     virtual_account_number: req.body.virtual_account_info.virtual_account_number,
@@ -172,7 +217,7 @@ const showVirtualAccount = (req) => __awaiter(void 0, void 0, void 0, function* 
     }
     catch (error) {
         console.log({ error: error });
-        throw error;
+        throw error.response.data.error.message;
     }
 });
 exports.showVirtualAccount = showVirtualAccount;
