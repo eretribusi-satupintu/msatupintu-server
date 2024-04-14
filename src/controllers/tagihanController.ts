@@ -10,6 +10,7 @@ export const getNewest = async (wr_id: number) => {
         kontrak: {
           wajib_retribusi_id: wr_id,
         },
+        status: 'NEW'
       },
       select: {
         id: true,

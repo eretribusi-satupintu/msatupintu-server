@@ -19,6 +19,7 @@ const getNewest = (wr_id) => __awaiter(void 0, void 0, void 0, function* () {
                 kontrak: {
                     wajib_retribusi_id: wr_id,
                 },
+                status: 'NEW'
             },
             select: {
                 id: true,
