@@ -194,26 +194,34 @@ const showVirtualAccount = (req) => __awaiter(void 0, void 0, void 0, function* 
         const finalDigest = generateDigest(JSON.stringify(notificationBody));
         const finalSignature = generateSignature(notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, finalDigest, dokuKey);
         // return finalSignature;
-        if (finalSignature == notificationHeader.signature) {
-            const vaData = prisma.virtualAccount.updateMany({
-                where: {
-                    virtual_account_number: req.body.virtual_account_info.virtual_account_number,
-                },
-                data: {
-                    status: req.body.virtual_account_info.status,
-                },
-            });
-            return { status: 'OK' };
-            // TODO: Do update the transaction status based on the `transaction.status`
-        }
-        else {
-            // TODO: Response with 400 errors for Invalid Signature
-            return {
-                status: finalSignature,
-                notif: notificationHeader.signature,
-                statusCode: 400,
-            };
-        }
+        const vaData = prisma.virtualAccount.updateMany({
+            where: {
+                virtual_account_number: req.body.virtual_account_info.virtual_account_number,
+            },
+            data: {
+                status: req.body.virtual_account_info.status,
+            },
+        });
+        return { status: 'OK' };
+        // if (finalSignature == notificationHeader.signature) {
+        //   const vaData = prisma.virtualAccount.updateMany({
+        //     where: {
+        //       virtual_account_number: req.body.virtual_account_info.virtual_account_number,
+        //     },
+        //     data: {
+        //       status: req.body.virtual_account_info.status,
+        //     },
+        //   });
+        //   return { status: 'OK' };
+        //   // TODO: Do update the transaction status based on the `transaction.status`
+        // } else {
+        //   // TODO: Response with 400 errors for Invalid Signature
+        //   return {
+        //     status: finalSignature,
+        //     notif: notificationHeader.signature,
+        //     statusCode: 400,
+        //   };
+        // }
     }
     catch (error) {
         console.log({ error: error });

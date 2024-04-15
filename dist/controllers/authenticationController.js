@@ -77,7 +77,8 @@ const login = (req) => __awaiter(void 0, void 0, void 0, function* () {
         };
         const playload = user.id.toString();
         const secret = process.env.SECRET_KEY.toString();
-        const expired = 60 * 60 * 1;
+        const expired = 10;
+        //  60 * 60 * 1
         const token = jsonwebtoken_1.default.sign({ playload }, secret, {
             expiresIn: expired,
         });

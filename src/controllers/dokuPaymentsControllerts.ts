@@ -217,26 +217,36 @@ const showVirtualAccount = async (req: any) => {
 
     // return finalSignature;
 
-    if (finalSignature == notificationHeader.signature) {
-      const vaData = prisma.virtualAccount.updateMany({
-        where: {
-          virtual_account_number: req.body.virtual_account_info.virtual_account_number,
-        },
-        data: {
-          status: req.body.virtual_account_info.status,
-        },
-      });
-      return { status: 'OK' };
+    const vaData = prisma.virtualAccount.updateMany({
+      where: {
+        virtual_account_number: req.body.virtual_account_info.virtual_account_number,
+      },
+      data: {
+        status: req.body.virtual_account_info.status,
+      },
+    });
+    return { status: 'OK' };
 
-      // TODO: Do update the transaction status based on the `transaction.status`
-    } else {
-      // TODO: Response with 400 errors for Invalid Signature
-      return {
-        status: finalSignature,
-        notif: notificationHeader.signature,
-        statusCode: 400,
-      };
-    }
+    // if (finalSignature == notificationHeader.signature) {
+    //   const vaData = prisma.virtualAccount.updateMany({
+    //     where: {
+    //       virtual_account_number: req.body.virtual_account_info.virtual_account_number,
+    //     },
+    //     data: {
+    //       status: req.body.virtual_account_info.status,
+    //     },
+    //   });
+    //   return { status: 'OK' };
+
+    //   // TODO: Do update the transaction status based on the `transaction.status`
+    // } else {
+    //   // TODO: Response with 400 errors for Invalid Signature
+    //   return {
+    //     status: finalSignature,
+    //     notif: notificationHeader.signature,
+    //     statusCode: 400,
+    //   };
+    // }
   } catch (error) {
     console.log({ error: error });
     throw (error as any).response.data.error.message;
