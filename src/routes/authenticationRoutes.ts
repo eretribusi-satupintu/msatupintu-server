@@ -33,7 +33,7 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/logout", authValidation, async (req: Request, res: Response) => {
+router.post("/logout", async (req: Request, res: Response) => {
   try {
     const data = await logout();
     res.status(200).json(data);

@@ -70,8 +70,7 @@ const login = async (req: User) => {
 
     const playload = user!.id.toString();
     const secret = process.env.SECRET_KEY!.toString();
-    const expired = 10;
-    //  60 * 60 * 1
+    const expired = 60 * 60 * 1;
 
     const token = jwt.sign({ playload }, secret, {
       expiresIn: expired,
