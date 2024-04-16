@@ -47,7 +47,6 @@ router.post('/virtual-account', (req, res) => __awaiter(void 0, void 0, void 0, 
 router.post('/notifications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, dokuPaymentsControllerts_1.paymentNotification)(req);
-        console.log({ hasil: data });
         res.status(200).json({ data: data });
     }
     catch (err) {

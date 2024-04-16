@@ -35,7 +35,6 @@ router.post('/virtual-account', async (req: Request, res: Response) => {
 router.post('/notifications', async (req: Request, res: Response) => {
   try {
     const data = await paymentNotification(req);
-    console.log({ hasil: data });
     res.status(200).json({ data: data });
   } catch (err) {
     console.log(err);

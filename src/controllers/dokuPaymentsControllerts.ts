@@ -195,21 +195,21 @@ const getVirtualAccount = async (request_id: string, req: IVirtualAccountnumberR
 
 const paymentNotification = async (req: any) => {
   try {
-    const notificationHeader = req.headers;
-    const notificationBody = req.body;
-    const notificationPath = '/api/payments/notifications';
-    const dokuKey = process.env.DOKU_SECRET_KEY;
+    // const notificationHeader = req.headers;
+    // const notificationBody = req.body;
+    // const notificationPath = '/api/payments/notifications';
+    // const dokuKey = process.env.DOKU_SECRET_KEY;
 
-    const finalDigest = generateDigest(JSON.stringify(notificationBody));
+    // const finalDigest = generateDigest(JSON.stringify(notificationBody));
 
-    const finalSignature = generateSignature(
-      notificationHeader['client-id'],
-      notificationHeader['request-id'],
-      notificationHeader['request-timestamp'],
-      notificationPath,
-      finalDigest,
-      dokuKey,
-    );
+    // const finalSignature = generateSignature(
+    //   notificationHeader['client-id'],
+    //   notificationHeader['request-id'],
+    //   notificationHeader['request-timestamp'],
+    //   notificationPath,
+    //   finalDigest,
+    //   dokuKey,
+    // );
 
     const vaData = await prisma.virtualAccount.updateMany({
       where: {
@@ -222,10 +222,10 @@ const paymentNotification = async (req: any) => {
 
     const tagihan = await prisma.tagihan.update({
       where: {
-        invoice_id: req.body.order.invoice_id,
+        invoice_id: req.body.order.invoice_number,
       },
       data: {
-        status: req.body.transaction.status,
+        status: 'VERIFIED',
       },
     });
 

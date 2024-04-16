@@ -183,12 +183,19 @@ const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, v
 exports.getVirtualAccount = getVirtualAccount;
 const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const notificationHeader = req.headers;
-        const notificationBody = req.body;
-        const notificationPath = '/api/payments/notifications';
-        const dokuKey = process.env.DOKU_SECRET_KEY;
-        const finalDigest = generateDigest(JSON.stringify(notificationBody));
-        const finalSignature = generateSignature(notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, finalDigest, dokuKey);
+        // const notificationHeader = req.headers;
+        // const notificationBody = req.body;
+        // const notificationPath = '/api/payments/notifications';
+        // const dokuKey = process.env.DOKU_SECRET_KEY;
+        // const finalDigest = generateDigest(JSON.stringify(notificationBody));
+        // const finalSignature = generateSignature(
+        //   notificationHeader['client-id'],
+        //   notificationHeader['request-id'],
+        //   notificationHeader['request-timestamp'],
+        //   notificationPath,
+        //   finalDigest,
+        //   dokuKey,
+        // );
         const vaData = yield prisma.virtualAccount.updateMany({
             where: {
                 virtual_account_number: req.body.virtual_account_info.virtual_account_number,
@@ -199,10 +206,10 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
         });
         const tagihan = yield prisma.tagihan.update({
             where: {
-                invoice_id: req.body.order.invoice_id,
+                invoice_id: req.body.order.invoice_number,
             },
             data: {
-                status: req.body.transaction.status,
+                status: 'VERIFIED',
             },
         });
         return { status: 'OK', data: vaData };
