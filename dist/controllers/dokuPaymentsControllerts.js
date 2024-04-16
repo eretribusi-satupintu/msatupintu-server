@@ -189,12 +189,20 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
         const dokuKey = process.env.DOKU_SECRET_KEY;
         const finalDigest = generateDigest(JSON.stringify(notificationBody));
         const finalSignature = generateSignature(notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, finalDigest, dokuKey);
-        const vaData = yield prisma.virtualAccount.update({
+        const vaData = yield prisma.virtualAccount.updateMany({
             where: {
-                id: 35,
+                virtual_account_number: req.body.virtual_account_info.virtual_account_number,
             },
             data: {
-                status: 'SUCCESS',
+                status: req.body.transaction.status,
+            },
+        });
+        const tagihan = yield prisma.tagihan.update({
+            where: {
+                invoice_id: req.body.order.invoice_id,
+            },
+            data: {
+                status: req.body.transaction.status,
             },
         });
         return { status: 'OK', data: vaData };

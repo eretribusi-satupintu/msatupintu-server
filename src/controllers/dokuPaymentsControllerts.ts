@@ -211,12 +211,21 @@ const paymentNotification = async (req: any) => {
       dokuKey,
     );
 
-    const vaData = await prisma.virtualAccount.update({
+    const vaData = await prisma.virtualAccount.updateMany({
       where: {
-        id: 35,
+        virtual_account_number: req.body.virtual_account_info.virtual_account_number,
       },
       data: {
-        status: 'SUCCESS',
+        status: req.body.transaction.status,
+      },
+    });
+
+    const tagihan = await prisma.tagihan.update({
+      where: {
+        invoice_id: req.body.order.invoice_id,
+      },
+      data: {
+        status: req.body.transaction.status,
       },
     });
 
