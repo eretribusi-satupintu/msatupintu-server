@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.showVirtualAccount = exports.getVirtualAccount = exports.getToken = void 0;
+exports.paymentNotification = exports.getVirtualAccount = exports.getToken = void 0;
 const client_1 = require("@prisma/client");
 const axios_1 = __importDefault(require("axios"));
 const crypto_1 = __importDefault(require("crypto"));
@@ -181,51 +181,27 @@ const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, v
     }
 });
 exports.getVirtualAccount = getVirtualAccount;
-const showVirtualAccount = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    // return req.headers;
-    // return req.headers.signature;
+const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const notificationHeader = req.headers;
         const notificationBody = req.body;
         const notificationPath = '/api/payments/notifications';
         const dokuKey = process.env.DOKU_SECRET_KEY;
-        // return [notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, dokuKey];
-        // return generateDigest(JSON.stringify(notificationBody));
         const finalDigest = generateDigest(JSON.stringify(notificationBody));
         const finalSignature = generateSignature(notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, finalDigest, dokuKey);
-        // return finalSignature;
-        const vaData = prisma.virtualAccount.updateMany({
+        const vaData = yield prisma.virtualAccount.update({
             where: {
-                virtual_account_number: req.body.virtual_account_info.virtual_account_number,
+                id: 35,
             },
             data: {
-                status: req.body.virtual_account_info.status,
+                status: 'SUCCESS',
             },
         });
-        return { status: 'OK' };
-        // if (finalSignature == notificationHeader.signature) {
-        //   const vaData = prisma.virtualAccount.updateMany({
-        //     where: {
-        //       virtual_account_number: req.body.virtual_account_info.virtual_account_number,
-        //     },
-        //     data: {
-        //       status: req.body.virtual_account_info.status,
-        //     },
-        //   });
-        //   return { status: 'OK' };
-        //   // TODO: Do update the transaction status based on the `transaction.status`
-        // } else {
-        //   // TODO: Response with 400 errors for Invalid Signature
-        //   return {
-        //     status: finalSignature,
-        //     notif: notificationHeader.signature,
-        //     statusCode: 400,
-        //   };
-        // }
+        return { status: 'OK', data: vaData };
     }
     catch (error) {
         console.log({ error: error });
         throw error.response.data.error.message;
     }
 });
-exports.showVirtualAccount = showVirtualAccount;
+exports.paymentNotification = paymentNotification;

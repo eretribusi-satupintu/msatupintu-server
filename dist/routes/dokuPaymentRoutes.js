@@ -33,7 +33,6 @@ router.post('/token', (req, res) => __awaiter(void 0, void 0, void 0, function* 
 }));
 router.post('/virtual-account', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // res.status(200).json({ data: req.body.payment_order });
         const data = yield (0, dokuPaymentsControllerts_1.getVirtualAccount)(req.body.request_id, req.body.payment_order, req.body.bank);
         console.log({ routes: data });
         res.status(200).json({ data: data });
@@ -47,7 +46,7 @@ router.post('/virtual-account', (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 router.post('/notifications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield (0, dokuPaymentsControllerts_1.showVirtualAccount)(req);
+        const data = yield (0, dokuPaymentsControllerts_1.paymentNotification)(req);
         console.log({ hasil: data });
         res.status(200).json({ data: data });
     }

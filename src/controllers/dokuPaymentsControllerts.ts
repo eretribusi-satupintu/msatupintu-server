@@ -193,17 +193,13 @@ const getVirtualAccount = async (request_id: string, req: IVirtualAccountnumberR
   }
 };
 
-const showVirtualAccount = async (req: any) => {
-  // return req.headers;
-  // return req.headers.signature;
+const paymentNotification = async (req: any) => {
   try {
     const notificationHeader = req.headers;
     const notificationBody = req.body;
     const notificationPath = '/api/payments/notifications';
     const dokuKey = process.env.DOKU_SECRET_KEY;
 
-    // return [notificationHeader['client-id'], notificationHeader['request-id'], notificationHeader['request-timestamp'], notificationPath, dokuKey];
-    // return generateDigest(JSON.stringify(notificationBody));
     const finalDigest = generateDigest(JSON.stringify(notificationBody));
 
     const finalSignature = generateSignature(
@@ -215,42 +211,20 @@ const showVirtualAccount = async (req: any) => {
       dokuKey,
     );
 
-    // return finalSignature;
-
-    const vaData = prisma.virtualAccount.updateMany({
+    const vaData = await prisma.virtualAccount.update({
       where: {
-        virtual_account_number: req.body.virtual_account_info.virtual_account_number,
+        id: 35,
       },
       data: {
-        status: req.body.virtual_account_info.status,
+        status: 'SUCCESS',
       },
     });
-    return { status: 'OK' };
 
-    // if (finalSignature == notificationHeader.signature) {
-    //   const vaData = prisma.virtualAccount.updateMany({
-    //     where: {
-    //       virtual_account_number: req.body.virtual_account_info.virtual_account_number,
-    //     },
-    //     data: {
-    //       status: req.body.virtual_account_info.status,
-    //     },
-    //   });
-    //   return { status: 'OK' };
-
-    //   // TODO: Do update the transaction status based on the `transaction.status`
-    // } else {
-    //   // TODO: Response with 400 errors for Invalid Signature
-    //   return {
-    //     status: finalSignature,
-    //     notif: notificationHeader.signature,
-    //     statusCode: 400,
-    //   };
-    // }
+    return { status: 'OK', data: vaData };
   } catch (error) {
     console.log({ error: error });
     throw (error as any).response.data.error.message;
   }
 };
 
-export { getToken, getVirtualAccount, showVirtualAccount };
+export { getToken, getVirtualAccount, paymentNotification };
