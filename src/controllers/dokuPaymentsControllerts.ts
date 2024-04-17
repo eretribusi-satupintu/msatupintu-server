@@ -120,7 +120,7 @@ const getToken = async () => {
   }
 };
 
-const getVirtualAccount = async (request_id: string, req: IVirtualAccountnumberRequest, bank: string) => {
+const getVirtualAccount = async (request_id: string, tagihan_id: number, req: IVirtualAccountnumberRequest, bank: string) => {
   try {
     const apiUrl = process.env.DOKU_VA_BASE_URL;
     const clientId = process.env.DOKU_CLIENT_ID;
@@ -147,8 +147,7 @@ const getVirtualAccount = async (request_id: string, req: IVirtualAccountnumberR
 
     const storeData = await prisma.pembayaran.create({
       data: {
-        tagihan_id: 1,
-        petugas_id: 1,
+        tagihan_id: tagihan_id,
         metode_pembayaran: 'VA',
         status: 'WAITING',
         virtual_account: {
@@ -238,7 +237,7 @@ const paymentNotification = async (req: any) => {
       },
     });
 
-    return { status: 'OK', data: vaData };
+    return { status: 'OK', data: tagihan.id };
   } catch (error) {
     console.log({ error: error });
     throw (error as any).response.data.error.message;

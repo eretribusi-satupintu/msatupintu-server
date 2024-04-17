@@ -114,7 +114,7 @@ const getToken = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getToken = getToken;
-const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, void 0, function* () {
+const getVirtualAccount = (request_id, tagihan_id, req, bank) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const apiUrl = process.env.DOKU_VA_BASE_URL;
         const clientId = process.env.DOKU_CLIENT_ID;
@@ -137,8 +137,7 @@ const getVirtualAccount = (request_id, req, bank) => __awaiter(void 0, void 0, v
         }
         const storeData = yield prisma.pembayaran.create({
             data: {
-                tagihan_id: 1,
-                petugas_id: 1,
+                tagihan_id: tagihan_id,
                 metode_pembayaran: 'VA',
                 status: 'WAITING',
                 virtual_account: {
@@ -220,7 +219,7 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
                 status: 'SUCCESS',
             },
         });
-        return { status: 'OK', data: vaData };
+        return { status: 'OK', data: tagihan.id };
     }
     catch (error) {
         console.log({ error: error });

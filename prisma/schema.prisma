@@ -40,7 +40,6 @@ model Petugas {
   id                Int                 @id @default(autoincrement())
   user_id           Int                 @unique
   subwilayah_id     Int
-  Pembayaran        Pembayaran[]
   subwilayah        SubWilayah          @relation(fields: [subwilayah_id], references: [id])
   users             User                @relation(fields: [user_id], references: [id])
   created_at        DateTime            @default(now())
@@ -191,6 +190,7 @@ model Tagihan {
   Pembayaran       Pembayaran[]
   kontrak          Kontrak           @relation(fields: [kontrak_id], references: [id])
   jatuh_tempo      DateTime          @default(now())
+  payment_time     DateTime?
   created_at       DateTime          @default(now())
   updated_at       DateTime          @default(now()) @updatedAt
   TransaksiPetugas TransaksiPetugas?
@@ -202,16 +202,13 @@ model Tagihan {
 model Pembayaran {
   id                Int              @id @default(autoincrement())
   tagihan_id        Int
-  petugas_id        Int
   metode_pembayaran MetodePembayaran
   status            Status
-  petugas           Petugas          @relation(fields: [petugas_id], references: [id])
   tagihan           Tagihan          @relation(fields: [tagihan_id], references: [id])
   virtual_account   VirtualAccount[]
   created_at        DateTime         @default(now())
   updated_at        DateTime         @default(now()) @updatedAt
 
-  @@index([petugas_id], map: "Pembayaran_petugas_id_fkey")
   @@index([tagihan_id], map: "Pembayaran_tagihan_id_fkey")
   @@map("pembayaran")
 }

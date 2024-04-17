@@ -33,7 +33,7 @@ router.post('/token', (req, res) => __awaiter(void 0, void 0, void 0, function* 
 }));
 router.post('/virtual-account', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield (0, dokuPaymentsControllerts_1.getVirtualAccount)(req.body.request_id, req.body.payment_order, req.body.bank);
+        const data = yield (0, dokuPaymentsControllerts_1.getVirtualAccount)(req.body.request_id, req.body.tagihan_id, req.body.payment_order, req.body.bank);
         console.log({ routes: data });
         res.status(200).json({ data: data });
     }
