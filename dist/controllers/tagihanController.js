@@ -29,6 +29,7 @@ const getNewest = (wr_id) => __awaiter(void 0, void 0, void 0, function* () {
                 jatuh_tempo: true,
                 status: true,
                 total_harga: true,
+                payment_time: true,
                 kontrak: {
                     select: {
                         wajib_retribusi: {
@@ -316,6 +317,7 @@ const getDetailTagihan = (tagihan_id) => __awaiter(void 0, void 0, void 0, funct
                 jatuh_tempo: true,
                 status: true,
                 total_harga: true,
+                payment_time: true,
                 kontrak: {
                     select: {
                         wajib_retribusi: {

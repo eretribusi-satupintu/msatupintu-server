@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.paymentNotification = exports.getVirtualAccount = exports.getToken = void 0;
+exports.getQrisCheckoutPage = exports.paymentNotification = exports.getVirtualAccount = exports.getToken = void 0;
 const client_1 = require("@prisma/client");
 const axios_1 = __importDefault(require("axios"));
 const crypto_1 = __importDefault(require("crypto"));
@@ -147,6 +147,7 @@ const getVirtualAccount = (request_id, tagihan_id, req, bank) => __awaiter(void 
                             virtual_account_number: data.data.virtual_account_info.virtual_account_number,
                             how_to_pay_page: data.data.virtual_account_info.how_to_pay_page,
                             how_to_pay_api: data.data.virtual_account_info.how_to_pay_api,
+                            bank: bank,
                             created_date: formatResponseToISO8601(data.data.virtual_account_info.created_date),
                             expired_date: formatResponseToISO8601(data.data.virtual_account_info.expired_date),
                             created_date_utc: data.data.virtual_account_info.created_date_utc,
@@ -180,6 +181,34 @@ const getVirtualAccount = (request_id, tagihan_id, req, bank) => __awaiter(void 
     }
 });
 exports.getVirtualAccount = getVirtualAccount;
+const getQrisCheckoutPage = (request_id, req) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const apiUrl = process.env.DOKU_VA_BASE_URL;
+        const clientId = process.env.DOKU_CLIENT_ID;
+        const requestId = 'INV-10-111-222-002';
+        const requestTimestamp = formattedUtcTimestamp;
+        const requestTarget = '/checkout/v1/payment';
+        const secret = process.env.DOKU_SECRET_KEY;
+        const body = req;
+        const digest = generateDigest(JSON.stringify(body));
+        const headers = {
+            'Client-Id': process.env.DOKU_CLIENT_ID,
+            'Request-Id': requestId,
+            'Request-Timestamp': formattedUtcTimestamp,
+            Signature: generateSignature(clientId, requestId, requestTimestamp, requestTarget, digest, secret),
+        };
+        const data = yield axios_1.default.post(apiUrl + requestTarget, body, { headers });
+        if (data.status != 200) {
+            throw data.data;
+        }
+        return data.data;
+    }
+    catch (error) {
+        console.log({ error: error.response.data.data });
+        throw error.response.data.error.message;
+    }
+});
+exports.getQrisCheckoutPage = getQrisCheckoutPage;
 const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // const notificationHeader = req.headers;

@@ -3,7 +3,7 @@ import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
-import { IVirtualAccountnumberRequest } from '../types';
+import { ICheckoutQrisRequest, IVirtualAccountnumberRequest } from '../types';
 const prisma = new PrismaClient();
 dotenv.config();
 
@@ -157,6 +157,7 @@ const getVirtualAccount = async (request_id: string, tagihan_id: number, req: IV
               virtual_account_number: data.data.virtual_account_info.virtual_account_number,
               how_to_pay_page: data.data.virtual_account_info.how_to_pay_page,
               how_to_pay_api: data.data.virtual_account_info.how_to_pay_api,
+              bank: bank,
               created_date: formatResponseToISO8601(data.data.virtual_account_info.created_date),
               expired_date: formatResponseToISO8601(data.data.virtual_account_info.expired_date),
               created_date_utc: data.data.virtual_account_info.created_date_utc,
@@ -187,6 +188,38 @@ const getVirtualAccount = async (request_id: string, tagihan_id: number, req: IV
     return response;
   } catch (error) {
     console.log({ error: (error as any).response });
+
+    throw (error as any).response.data.error.message;
+  }
+};
+
+const getQrisCheckoutPage = async (request_id: string, req: ICheckoutQrisRequest) => {
+  try {
+    const apiUrl = process.env.DOKU_VA_BASE_URL;
+    const clientId = process.env.DOKU_CLIENT_ID;
+    const requestId = 'INV-10-111-222-002';
+    const requestTimestamp = formattedUtcTimestamp;
+    const requestTarget = '/checkout/v1/payment';
+    const secret = process.env.DOKU_SECRET_KEY;
+    const body = req;
+    const digest = generateDigest(JSON.stringify(body));
+
+    const headers = {
+      'Client-Id': process.env.DOKU_CLIENT_ID,
+      'Request-Id': requestId,
+      'Request-Timestamp': formattedUtcTimestamp,
+      Signature: generateSignature(clientId!, requestId, requestTimestamp, requestTarget, digest, secret),
+    };
+
+    const data = await axios.post(apiUrl! + requestTarget, body, { headers });
+
+    if (data.status != 200) {
+      throw data.data;
+    }
+
+    return data.data;
+  } catch (error) {
+    console.log({ error: (error as any).response.data.data });
 
     throw (error as any).response.data.error.message;
   }
@@ -245,4 +278,4 @@ const paymentNotification = async (req: any) => {
   }
 };
 
-export { getToken, getVirtualAccount, paymentNotification };
+export { getToken, getVirtualAccount, paymentNotification, getQrisCheckoutPage };

@@ -20,6 +20,7 @@ export const getNewest = async (wr_id: number) => {
         jatuh_tempo: true,
         status: true,
         total_harga: true,
+        payment_time: true,
         kontrak: {
           select: {
             wajib_retribusi: {
@@ -307,6 +308,7 @@ export const getDetailTagihan = async (tagihan_id: number) => {
         jatuh_tempo: true,
         status: true,
         total_harga: true,
+        payment_time: true,
         kontrak: {
           select: {
             wajib_retribusi: {

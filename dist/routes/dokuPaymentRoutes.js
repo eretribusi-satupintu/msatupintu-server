@@ -44,6 +44,19 @@ router.post('/virtual-account', (req, res) => __awaiter(void 0, void 0, void 0, 
         });
     }
 }));
+router.post('/qris-checkout', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield (0, dokuPaymentsControllerts_1.getQrisCheckoutPage)(req.body.request_id, req.body);
+        console.log({ data: data.data });
+        res.status(200).json({ data: data });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: err,
+        });
+    }
+}));
 router.post('/notifications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, dokuPaymentsControllerts_1.paymentNotification)(req);

@@ -90,6 +90,16 @@ export interface ITransaksiPetugas {
   status?: string;
 }
 
+export interface ICheckoutQrisRequest {
+  order: {
+    amount: number;
+    invoice_number: string;
+  };
+  payment: {
+    payment_due_date: number;
+  };
+}
+
 export enum ITagihanStatus {
   NEW,
   WAITING,
