@@ -209,6 +209,7 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
             },
             data: {
                 status: 'VERIFIED',
+                payment_time: req.body.transaction.date,
             },
         });
         const pembayaran = yield prisma.pembayaran.updateMany({

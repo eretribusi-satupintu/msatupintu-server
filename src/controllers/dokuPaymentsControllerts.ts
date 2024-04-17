@@ -225,6 +225,7 @@ const paymentNotification = async (req: any) => {
       },
       data: {
         status: 'VERIFIED',
+        payment_time: req.body.transaction.date,
       },
     });
 
