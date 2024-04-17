@@ -261,6 +261,7 @@ model CheckoutPayment {
   url                  String
   expired_date         DateTime
   uuid                 Int
+  token_id             Int
   tagihan              Tagihan  @relation(fields: [tagihan_id], references: [id])
   created_at           DateTime @default(now())
   updated_at           DateTime @default(now()) @updatedAt

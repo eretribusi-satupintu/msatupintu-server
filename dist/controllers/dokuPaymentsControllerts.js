@@ -181,7 +181,7 @@ const getVirtualAccount = (request_id, tagihan_id, req, bank) => __awaiter(void 
     }
 });
 exports.getVirtualAccount = getVirtualAccount;
-const getQrisCheckoutPage = (request_id, req) => __awaiter(void 0, void 0, void 0, function* () {
+const getQrisCheckoutPage = (request_id, tagihan_id, req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const apiUrl = process.env.DOKU_VA_BASE_URL;
         const clientId = process.env.DOKU_CLIENT_ID;
@@ -197,11 +197,22 @@ const getQrisCheckoutPage = (request_id, req) => __awaiter(void 0, void 0, void 
             'Request-Timestamp': formattedUtcTimestamp,
             Signature: generateSignature(clientId, requestId, requestTimestamp, requestTarget, digest, secret),
         };
-        const data = yield axios_1.default.post(apiUrl + requestTarget, body, { headers });
-        if (data.status != 200) {
-            throw data.data;
+        const res = yield axios_1.default.post(apiUrl + requestTarget, body, { headers });
+        const qrisCheckout = yield prisma.checkoutPayment.create({
+            data: {
+                tagihan_id: tagihan_id,
+                payment_method_types: res.data.response.payment.payment_method_types[0],
+                url: res.data.response.payment.url,
+                payment_due_date: res.data.response.payment.payment_due_date,
+                expired_date: res.data.response.payment.expired_date,
+                token_id: res.data.response.payment.token_id,
+                uuid: res.data.response.uuid,
+            },
+        });
+        if (res.status != 200) {
+            throw res.data;
         }
-        return data.data;
+        return qrisCheckout;
     }
     catch (error) {
         console.log({ error: error.response.data.data });
