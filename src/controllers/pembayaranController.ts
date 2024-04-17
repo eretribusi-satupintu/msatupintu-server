@@ -1,10 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Status, StatusBayar } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const get = async () => {
+export const get = async (status: Status) => {
   try {
     const data = await prisma.pembayaran.findMany({
+      where: {
+        status: status,
+      },
       include: {
         tagihan: {
           select: {
@@ -22,23 +25,23 @@ export const get = async () => {
           },
         },
         virtual_account: {
+          where: {
+            status: 'SUCCESS',
+          },
           take: 1,
           orderBy: { created_at: 'desc' },
-          select: {
-            bank: true,
-          },
         },
       },
     });
 
     const resposeData: Object[] = [];
 
-    data.map((item, i) => {
-      const { virtual_account, ...data } = item;
-      resposeData.push({ ...data, virtual_account: item.virtual_account[i] });
-    });
+    // data.map((item, i) => {
+    //   const { virtual_account, ...data } = item;
+    //   resposeData.push({ ...data, virtual_account: item.virtual_account[i] });
+    // });
 
-    return resposeData;
+    return data;
   } catch (error) {
     throw error;
   }

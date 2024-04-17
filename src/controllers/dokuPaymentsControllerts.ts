@@ -229,6 +229,15 @@ const paymentNotification = async (req: any) => {
       },
     });
 
+    const pembayaran = await prisma.pembayaran.updateMany({
+      where: {
+        tagihan_id: tagihan.id,
+      },
+      data: {
+        status: 'SUCCESS',
+      },
+    });
+
     return { status: 'OK', data: vaData };
   } catch (error) {
     console.log({ error: error });
