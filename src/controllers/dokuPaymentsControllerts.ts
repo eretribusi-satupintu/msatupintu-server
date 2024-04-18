@@ -85,9 +85,6 @@ const generateXSignature = (secretKey: string, stringToSign: string) => {
 
   const signature = signer.sign(secretKey, 'base64');
   return signature;
-
-  // let bufferFromJsonStringSign = Buffer.from(jsonStringSign);
-  // return bufferFromJsonStringSign.toString('base64');
 };
 
 const getToken = async () => {
@@ -193,11 +190,11 @@ const getVirtualAccount = async (request_id: string, tagihan_id: number, req: IV
   }
 };
 
-const getQrisCheckoutPage = async (request_id: string, tagihan_id: number, req: ICheckoutQrisRequest) => {
+const getQrisCheckoutPage = async (request_id: string, request_timestamp: string, tagihan_id: number, req: ICheckoutQrisRequest) => {
   try {
     const apiUrl = process.env.DOKU_VA_BASE_URL;
     const clientId = process.env.DOKU_CLIENT_ID;
-    const requestId = 'INV-10-111-222-002';
+    const requestId = request_id;
     const requestTimestamp = formattedUtcTimestamp;
     const requestTarget = '/checkout/v1/payment';
     const secret = process.env.DOKU_SECRET_KEY;
@@ -213,6 +210,10 @@ const getQrisCheckoutPage = async (request_id: string, tagihan_id: number, req: 
 
     const res = await axios.post(apiUrl! + requestTarget, body, { headers });
 
+    if (res.status != 200) {
+      throw res.data;
+    }
+
     const qrisCheckout = await prisma.checkoutPayment.create({
       data: {
         tagihan_id: tagihan_id,
@@ -221,18 +222,14 @@ const getQrisCheckoutPage = async (request_id: string, tagihan_id: number, req: 
         payment_due_date: res.data.response.payment.payment_due_date,
         expired_date: res.data.response.payment.expired_date,
         token_id: res.data.response.payment.token_id,
-        uuid: res.data.response.uuid,
+        uuid: res.data.response.uuid.toString(),
       },
     });
 
-    if (res.status != 200) {
-      throw res.data;
-    }
-
     return qrisCheckout;
   } catch (error) {
-    console.log({ error: (error as any).response.data.data });
-
+    console.log({ error: (error as any).response.data });
+    // throw error;
     throw (error as any).response.data.error.message;
   }
 };

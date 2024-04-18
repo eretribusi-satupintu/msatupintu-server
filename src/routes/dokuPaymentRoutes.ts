@@ -34,7 +34,7 @@ router.post('/virtual-account', async (req: Request, res: Response) => {
 
 router.post('/qris-checkout', async (req: Request, res: Response) => {
   try {
-    const data = await getQrisCheckoutPage(req.body.request_id, req.body.tagihan_id, req.body);
+    const data = await getQrisCheckoutPage(req.body.request_id, req.body.request_timestamp, req.body.tagihan_id, req.body);
     console.log({ data: data });
     res.status(200).json({ data: data });
   } catch (err) {

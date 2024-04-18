@@ -15,6 +15,7 @@ const corsOption = {
 };
 app.use((0, cors_1.default)(corsOption));
 app.use(express_1.default.json({ limit: '20mb' }));
+app.use(express_1.default.static('/public/assets'));
 app.use('/api', routes_1.default);
 app.get('/', (req, res) => {
     return res.send('Server running');

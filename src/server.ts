@@ -16,6 +16,8 @@ app.use(cors(corsOption));
 
 app.use(express.json({ limit: '20mb' }));
 
+app.use(express.static('/public/assets'));
+
 app.use('/api', routes);
 
 app.get('/', (req: Request, res: Response) => {

@@ -83,8 +83,6 @@ const generateXSignature = (secretKey, stringToSign) => {
     signer.end();
     const signature = signer.sign(secretKey, 'base64');
     return signature;
-    // let bufferFromJsonStringSign = Buffer.from(jsonStringSign);
-    // return bufferFromJsonStringSign.toString('base64');
 };
 const getToken = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -181,11 +179,11 @@ const getVirtualAccount = (request_id, tagihan_id, req, bank) => __awaiter(void 
     }
 });
 exports.getVirtualAccount = getVirtualAccount;
-const getQrisCheckoutPage = (request_id, tagihan_id, req) => __awaiter(void 0, void 0, void 0, function* () {
+const getQrisCheckoutPage = (request_id, request_timestamp, tagihan_id, req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const apiUrl = process.env.DOKU_VA_BASE_URL;
         const clientId = process.env.DOKU_CLIENT_ID;
-        const requestId = 'INV-10-111-222-002';
+        const requestId = request_id;
         const requestTimestamp = formattedUtcTimestamp;
         const requestTarget = '/checkout/v1/payment';
         const secret = process.env.DOKU_SECRET_KEY;
@@ -198,6 +196,9 @@ const getQrisCheckoutPage = (request_id, tagihan_id, req) => __awaiter(void 0, v
             Signature: generateSignature(clientId, requestId, requestTimestamp, requestTarget, digest, secret),
         };
         const res = yield axios_1.default.post(apiUrl + requestTarget, body, { headers });
+        if (res.status != 200) {
+            throw res.data;
+        }
         const qrisCheckout = yield prisma.checkoutPayment.create({
             data: {
                 tagihan_id: tagihan_id,
@@ -206,16 +207,14 @@ const getQrisCheckoutPage = (request_id, tagihan_id, req) => __awaiter(void 0, v
                 payment_due_date: res.data.response.payment.payment_due_date,
                 expired_date: res.data.response.payment.expired_date,
                 token_id: res.data.response.payment.token_id,
-                uuid: res.data.response.uuid,
+                uuid: res.data.response.uuid.toString(),
             },
         });
-        if (res.status != 200) {
-            throw res.data;
-        }
         return qrisCheckout;
     }
     catch (error) {
-        console.log({ error: error.response.data.data });
+        console.log({ error: error.response.data });
+        // throw error;
         throw error.response.data.error.message;
     }
 });

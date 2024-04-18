@@ -143,15 +143,16 @@ model Retribusi {
 }
 
 model ItemRetribusi {
-  id            Int          @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   retribusi_id  Int
   kategori_nama String
   jenis_tagihan Jenistagihan
   harga         Float
-  retribusi     Retribusi    @relation(fields: [retribusi_id], references: [id])
+  retribusi     Retribusi       @relation(fields: [retribusi_id], references: [id])
   kontrak       Kontrak[]
-  created_at    DateTime     @default(now())
-  updated_at    DateTime     @default(now()) @updatedAt
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @default(now()) @updatedAt
+  TagihanManual TagihanManual[]
 
   @@index([retribusi_id], map: "item_retribusi_retribusi_id_fkey")
   @@map("item_retribusi")
@@ -186,7 +187,6 @@ model Tagihan {
   status           StatusBayar       @default(NEW)
   invoice_id       String            @unique
   request_id       String            @unique
-  virtualAccountId Int?
   Pembayaran       Pembayaran[]
   kontrak          Kontrak           @relation(fields: [kontrak_id], references: [id])
   jatuh_tempo      DateTime          @default(now())
@@ -198,6 +198,20 @@ model Tagihan {
 
   @@index([kontrak_id], map: "tagihan_kontrak_id_fkey")
   @@map("tagihan")
+}
+
+model TagihanManual {
+  id                Int                 @id @default(autoincrement())
+  item_retribusi_id Int
+  detail_tagihan    String
+  total_harga       Int
+  status            StatusTagihanManual
+  item_retribusi    ItemRetribusi       @relation(fields: [item_retribusi_id], references: [id])
+  paid_at           DateTime
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @default(now()) @updatedAt
+
+  @@map("tagihan_manual")
 }
 
 model Pembayaran {
@@ -259,9 +273,9 @@ model CheckoutPayment {
   payment_method_types String
   payment_due_date     Int
   url                  String
-  expired_date         DateTime
-  uuid                 Int
-  token_id             Int
+  expired_date         String
+  uuid                 String
+  token_id             String
   tagihan              Tagihan  @relation(fields: [tagihan_id], references: [id])
   created_at           DateTime @default(now())
   updated_at           DateTime @default(now()) @updatedAt
@@ -311,4 +325,9 @@ enum StatusSetoran {
 enum LokasiSetoran {
   TRANSFER_BANK
   KANTOR
+}
+
+enum StatusTagihanManual {
+  NEW
+  SUCCESS
 }
