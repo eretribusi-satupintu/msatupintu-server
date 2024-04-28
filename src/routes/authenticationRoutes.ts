@@ -1,29 +1,25 @@
-import express, { Request, Response } from "express";
-import bodyParser from "body-parser";
-import {
-  register,
-  login as loginController,
-  logout,
-} from "../controllers/authenticationController";
-import authValidation from "../middleware/authValidationMiddleware";
+import express, { Request, Response } from 'express';
+import bodyParser from 'body-parser';
+import { login as loginController, logout } from '../controllers/authenticationController';
+import authValidation from '../middleware/authValidationMiddleware';
 const router = express.Router();
 
 router.use(bodyParser.json());
 
-router.post("/register", async (req: Request, res: Response) => {
-  try {
-    const data = await register(req.body);
+// router.post('/register', async (req: Request, res: Response) => {
+//   try {
+//     const data = await register(req.body);
 
-    res.status(200).json({ data: data });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({
-      message: err,
-    });
-  }
-});
+//     res.status(200).json({ data: data });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(400).json({
+//       message: err,
+//     });
+//   }
+// });
 
-router.post("/login", async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response) => {
   try {
     const data = await loginController(req.body);
     res.status(200).json(data);
@@ -33,7 +29,7 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/logout", async (req: Request, res: Response) => {
+router.post('/logout', async (req: Request, res: Response) => {
   try {
     const data = await logout();
     res.status(200).json(data);

@@ -6,29 +6,30 @@ import { hashPassword, checkPassword } from '../utils/utils';
 
 const prisma = new PrismaClient();
 
-const register = async (req: User) => {
-  try {
-    const emailExist = await checkEmail(req.email);
+// const register = async (req: User) => {
+//   try {
+//     const emailExist = await checkEmail(req.email);
 
-    if (emailExist.status) {
-      console.log(emailExist.message);
-      return emailExist.message;
-    }
+//     if (emailExist.status) {
+//       console.log(emailExist.message);
+//       return emailExist.message;
+//     }
 
-    const hashedPassword = (await hashPassword(req.password)) as string;
-    const data = await prisma.user.create({
-      data: {
-        name: req.name,
-        email: req.email,
-        password: hashedPassword,
-      },
-    });
+//     const hashedPassword = (await hashPassword(req.password)) as string;
+//     const data = await prisma.user.create({
+//       data: {
+//         name: req.name,
+//         email: req.email,
+//         password: hashedPassword,
+//         phone_number: req.phoneNumber
+//       },
+//     });
 
-    return { message: 'user created succesfully', user: data };
-  } catch (error) {
-    throw error;
-  }
-};
+//     return { message: 'user created succesfully', user: data };
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 const login = async (req: User) => {
   try {
     const user = await prisma.user.findUnique({
@@ -123,4 +124,4 @@ const logout = async () => {
     message: 'Logout Successfully',
   };
 };
-export { register, login, logout };
+export { login, logout };

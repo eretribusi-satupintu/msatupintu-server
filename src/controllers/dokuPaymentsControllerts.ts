@@ -117,12 +117,18 @@ const getToken = async () => {
   }
 };
 
-const getVirtualAccount = async (request_id: string, tagihan_id: number, req: IVirtualAccountnumberRequest, bank: string) => {
+const getVirtualAccount = async (
+  request_id: string,
+  tagihan_id: number,
+  request_timestamp: string,
+  req: IVirtualAccountnumberRequest,
+  bank: string,
+) => {
   try {
     const apiUrl = process.env.DOKU_VA_BASE_URL;
     const clientId = process.env.DOKU_CLIENT_ID;
     const requestId = request_id;
-    const requestTimestamp = formattedUtcTimestamp;
+    const requestTimestamp = request_timestamp;
     const requestTarget = '/' + bank + '-virtual-account/v2/payment-code';
     const secret = process.env.DOKU_SECRET_KEY;
     const body = req;
@@ -190,12 +196,13 @@ const getVirtualAccount = async (request_id: string, tagihan_id: number, req: IV
   }
 };
 
-const getQrisCheckoutPage = async (request_id: string, request_timestamp: string, tagihan_id: number, req: ICheckoutQrisRequest) => {
+const getQrisCheckoutPage = async (request_id: string, tagihan_id: number, request_timestamp: string, req: ICheckoutQrisRequest) => {
   try {
+    console.log(request_timestamp);
     const apiUrl = process.env.DOKU_VA_BASE_URL;
     const clientId = process.env.DOKU_CLIENT_ID;
     const requestId = request_id;
-    const requestTimestamp = formattedUtcTimestamp;
+    const requestTimestamp = request_timestamp;
     const requestTarget = '/checkout/v1/payment';
     const secret = process.env.DOKU_SECRET_KEY;
     const body = req;
@@ -204,7 +211,7 @@ const getQrisCheckoutPage = async (request_id: string, request_timestamp: string
     const headers = {
       'Client-Id': process.env.DOKU_CLIENT_ID,
       'Request-Id': requestId,
-      'Request-Timestamp': formattedUtcTimestamp,
+      'Request-Timestamp': request_timestamp,
       Signature: generateSignature(clientId!, requestId, requestTimestamp, requestTarget, digest, secret),
     };
 

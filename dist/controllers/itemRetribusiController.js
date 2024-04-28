@@ -12,21 +12,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWajibRetribusi = exports.createItemRetribusi = void 0;
+exports.getItemRetribusi = exports.createItemRetribusi = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const atributeRetribusi_1 = __importDefault(require("../mongo/models/atributeRetribusi"));
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const getWajibRetribusi = () => __awaiter(void 0, void 0, void 0, function* () {
+// const getWajibRetribusi = async () => {
+//   try {
+//     const data = await prisma.wajibRetribusi.findMany();
+//     return data;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+const getItemRetribusi = (subwilayah_id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield prisma.wajibRetribusi.findMany();
+        const subwilayah = yield prisma.subWilayah.findUnique({
+            where: {
+                id: subwilayah_id,
+            },
+        });
+        const data = yield prisma.itemRetribusi.findMany({
+            where: {
+                retribusi_id: subwilayah === null || subwilayah === void 0 ? void 0 : subwilayah.id,
+            },
+        });
         return data;
     }
     catch (error) {
         throw error;
     }
 });
-exports.getWajibRetribusi = getWajibRetribusi;
+exports.getItemRetribusi = getItemRetribusi;
 const createItemRetribusi = (req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { data_khusus_retribusi, kategori_nama, jenis_tagihan, harga } = req;
@@ -41,7 +58,7 @@ const createItemRetribusi = (req) => __awaiter(void 0, void 0, void 0, function*
             .save()
             .then(() => {
             return {
-                message: "Item Retribusi Created Succeessfully",
+                message: 'Item Retribusi Created Succeessfully',
                 itemRetribusi: data,
             };
         })

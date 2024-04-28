@@ -17,6 +17,12 @@ export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: numb
                 },
               },
             },
+            tagihan: {
+              some: {
+                status: 'NEW',
+                active: true,
+              },
+            },
           },
         },
       },
@@ -35,7 +41,14 @@ export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: numb
           },
           include: {
             _count: {
-              select: { tagihan: true },
+              select: {
+                tagihan: {
+                  where: {
+                    status: 'NEW',
+                    active: true,
+                  },
+                },
+              },
             },
           },
         },
@@ -85,6 +98,7 @@ export const getWajibRetribusiDetail = async (wr_id: number, sub_wilayah_id: num
                 tagihan: {
                   where: {
                     status: 'NEW',
+                    active: true,
                   },
                 },
               },

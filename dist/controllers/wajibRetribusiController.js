@@ -26,6 +26,12 @@ const getWajibRetribusi = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void
                                 },
                             },
                         },
+                        tagihan: {
+                            some: {
+                                status: 'NEW',
+                                active: true,
+                            },
+                        },
                     },
                 },
             },
@@ -44,7 +50,14 @@ const getWajibRetribusi = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void
                     },
                     include: {
                         _count: {
-                            select: { tagihan: true },
+                            select: {
+                                tagihan: {
+                                    where: {
+                                        status: 'NEW',
+                                        active: true,
+                                    },
+                                },
+                            },
                         },
                     },
                 },
@@ -93,6 +106,7 @@ const getWajibRetribusiDetail = (wr_id, sub_wilayah_id) => __awaiter(void 0, voi
                                 tagihan: {
                                     where: {
                                         status: 'NEW',
+                                        active: true,
                                     },
                                 },
                             },

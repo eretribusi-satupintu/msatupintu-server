@@ -28,7 +28,6 @@ const petugasPayTagihan = (transaksiPetugas) => __awaiter(void 0, void 0, void 0
                 petugas_id: transaksiPetugas.petugas_id,
                 tagihan_id: tagihan.id,
                 nominal: tagihan.total_harga,
-                status: 'VERIFIED',
             },
         });
         const tagihanDetail = yield (0, tagihanController_1.getDetailTagihan)(tagihan.id);
@@ -46,18 +45,15 @@ const petugasCancelPayTagihan = (tagihan_id) => __awaiter(void 0, void 0, void 0
                 id: tagihan_id,
             },
             data: {
-                status: 'REQUEST',
+                status: 'NEW',
             },
             include: {
                 TransaksiPetugas: true,
             },
         });
-        const petugasTransaksi = yield prisma.transaksiPetugas.update({
+        const petugasTransaksi = yield prisma.transaksiPetugas.delete({
             where: {
                 id: tagihan.TransaksiPetugas.id,
-            },
-            data: {
-                status: 'REQUEST',
             },
         });
         const tagihanDetail = yield (0, tagihanController_1.getDetailTagihan)(tagihan_id);
@@ -70,11 +66,10 @@ const petugasCancelPayTagihan = (tagihan_id) => __awaiter(void 0, void 0, void 0
 exports.petugasCancelPayTagihan = petugasCancelPayTagihan;
 const getBillAmount = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const totalTagiahn = yield prisma.transaksiPetugas.findMany({
+        const totalTagihan = yield prisma.transaksiPetugas.findMany({
             where: {
                 petugas_id: petugas_id,
-                disetor: false,
-                status: 'VERIFIED',
+                is_stored: false,
                 AND: {
                     tagihan: {
                         kontrak: {
@@ -84,14 +79,15 @@ const getBillAmount = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, 
                 },
             },
             select: {
+                id: true,
                 nominal: true,
             },
         });
         let sumTagihan = 0;
-        totalTagiahn.map((transaksi) => {
+        totalTagihan.map((transaksi) => {
             sumTagihan += transaksi.nominal;
         });
-        return { total: sumTagihan };
+        return { transaksi_petugas: totalTagihan, total: sumTagihan };
     }
     catch (error) {
         throw error;

@@ -18,6 +18,8 @@ router.get('/petugas/:petugas_id/subwilayah/:sub_wilayah_id', async (req: Reques
 });
 
 router.post('/petugas/:petugas_id/subwilayah/:sub_wilayah_id', async (req: Request, res: Response) => {
+  console.log({ body: req.body });
+
   try {
     const data = await storeSetoran(Number(req.params.petugas_id), Number(req.params.sub_wilayah_id), req.body);
 

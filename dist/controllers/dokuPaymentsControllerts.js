@@ -112,12 +112,12 @@ const getToken = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getToken = getToken;
-const getVirtualAccount = (request_id, tagihan_id, req, bank) => __awaiter(void 0, void 0, void 0, function* () {
+const getVirtualAccount = (request_id, tagihan_id, request_timestamp, req, bank) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const apiUrl = process.env.DOKU_VA_BASE_URL;
         const clientId = process.env.DOKU_CLIENT_ID;
         const requestId = request_id;
-        const requestTimestamp = formattedUtcTimestamp;
+        const requestTimestamp = request_timestamp;
         const requestTarget = '/' + bank + '-virtual-account/v2/payment-code';
         const secret = process.env.DOKU_SECRET_KEY;
         const body = req;
@@ -179,12 +179,13 @@ const getVirtualAccount = (request_id, tagihan_id, req, bank) => __awaiter(void 
     }
 });
 exports.getVirtualAccount = getVirtualAccount;
-const getQrisCheckoutPage = (request_id, request_timestamp, tagihan_id, req) => __awaiter(void 0, void 0, void 0, function* () {
+const getQrisCheckoutPage = (request_id, tagihan_id, request_timestamp, req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log(request_timestamp);
         const apiUrl = process.env.DOKU_VA_BASE_URL;
         const clientId = process.env.DOKU_CLIENT_ID;
         const requestId = request_id;
-        const requestTimestamp = formattedUtcTimestamp;
+        const requestTimestamp = request_timestamp;
         const requestTarget = '/checkout/v1/payment';
         const secret = process.env.DOKU_SECRET_KEY;
         const body = req;
@@ -192,7 +193,7 @@ const getQrisCheckoutPage = (request_id, request_timestamp, tagihan_id, req) => 
         const headers = {
             'Client-Id': process.env.DOKU_CLIENT_ID,
             'Request-Id': requestId,
-            'Request-Timestamp': formattedUtcTimestamp,
+            'Request-Timestamp': request_timestamp,
             Signature: generateSignature(clientId, requestId, requestTimestamp, requestTarget, digest, secret),
         };
         const res = yield axios_1.default.post(apiUrl + requestTarget, body, { headers });

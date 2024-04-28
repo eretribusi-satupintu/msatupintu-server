@@ -28,6 +28,7 @@ router.get('/petugas/:petugas_id/subwilayah/:sub_wilayah_id', (req, res) => __aw
     }
 }));
 router.post('/petugas/:petugas_id/subwilayah/:sub_wilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log({ body: req.body });
     try {
         const data = yield (0, setoranController_1.storeSetoran)(Number(req.params.petugas_id), Number(req.params.sub_wilayah_id), req.body);
         res.status(200).json({ data: data });

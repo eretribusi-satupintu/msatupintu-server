@@ -20,7 +20,6 @@ export const petugasPayTagihan = async (transaksiPetugas: ITransaksiPetugas) => 
         petugas_id: transaksiPetugas.petugas_id,
         tagihan_id: tagihan.id,
         nominal: tagihan.total_harga,
-        status: 'VERIFIED',
       },
     });
 
@@ -39,19 +38,16 @@ export const petugasCancelPayTagihan = async (tagihan_id: number) => {
         id: tagihan_id,
       },
       data: {
-        status: 'REQUEST',
+        status: 'NEW',
       },
       include: {
         TransaksiPetugas: true,
       },
     });
 
-    const petugasTransaksi = await prisma.transaksiPetugas.update({
+    const petugasTransaksi = await prisma.transaksiPetugas.delete({
       where: {
         id: tagihan.TransaksiPetugas!.id,
-      },
-      data: {
-        status: 'REQUEST',
       },
     });
 
@@ -65,11 +61,10 @@ export const petugasCancelPayTagihan = async (tagihan_id: number) => {
 
 export const getBillAmount = async (petugas_id: number, sub_wilayah_id: number) => {
   try {
-    const totalTagiahn = await prisma.transaksiPetugas.findMany({
+    const totalTagihan = await prisma.transaksiPetugas.findMany({
       where: {
         petugas_id: petugas_id,
-        disetor: false,
-        status: 'VERIFIED',
+        is_stored: false,
         AND: {
           tagihan: {
             kontrak: {
@@ -79,17 +74,18 @@ export const getBillAmount = async (petugas_id: number, sub_wilayah_id: number) 
         },
       },
       select: {
+        id: true,
         nominal: true,
       },
     });
 
     let sumTagihan = 0;
 
-    totalTagiahn.map((transaksi) => {
+    totalTagihan.map((transaksi) => {
       sumTagihan += transaksi.nominal;
     });
 
-    return { total: sumTagihan };
+    return { transaksi_petugas: totalTagihan, total: sumTagihan };
   } catch (error) {
     throw error;
   }

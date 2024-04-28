@@ -17,19 +17,18 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const authenticationController_1 = require("../controllers/authenticationController");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
-router.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const data = yield (0, authenticationController_1.register)(req.body);
-        res.status(200).json({ data: data });
-    }
-    catch (err) {
-        console.log(err);
-        res.status(400).json({
-            message: err,
-        });
-    }
-}));
-router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+// router.post('/register', async (req: Request, res: Response) => {
+//   try {
+//     const data = await register(req.body);
+//     res.status(200).json({ data: data });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(400).json({
+//       message: err,
+//     });
+//   }
+// });
+router.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, authenticationController_1.login)(req.body);
         res.status(200).json(data);
@@ -39,7 +38,7 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(403).json(error);
     }
 }));
-router.post("/logout", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/logout', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, authenticationController_1.logout)();
         res.status(200).json(data);

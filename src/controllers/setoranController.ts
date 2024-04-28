@@ -49,6 +49,18 @@ export const storeSetoran = async (petugas_id: number, sub_wilayah_id: number, r
       },
     });
 
+    req.transaksi_petugas.forEach(async (item) => {
+      const transaksiPetugas = await prisma.transaksiPetugas.update({
+        where: {
+          id: item,
+        },
+        data: {
+          setoran_id: setoran.id,
+          is_stored: true,
+        },
+      });
+    });
+
     return setoran;
   } catch (error) {
     console.log(error);
@@ -92,6 +104,17 @@ export const updateSetoran = async (setoran_id: number, petugas_id: number, sub_
         status: 'MENUNGGU',
       },
     });
+
+    // req.transaksi_petugas.forEach(async (item) => {
+    //   const transaksiPetugas = await prisma.transaksiPetugas.update({
+    //     where: {
+    //       id: item,
+    //     },
+    //     data: {
+    //       setoran_id: setoran.id,
+    //     },
+    //   });
+    // });
 
     return setoran;
   } catch (error) {

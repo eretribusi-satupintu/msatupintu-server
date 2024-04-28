@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDetailTagihan = exports.getPaidTagihanWajibRetribusi = exports.getTagihanWajibRetribusiMasyarakatProgress = exports.getTagihanWajibRetribusiMasyarakat = exports.getTagihanWajibRetribusi = exports.getNewest = void 0;
+exports.getDetailTagihan = exports.getTagihan = exports.getPaidTagihanWajibRetribusi = exports.getTagihanWajibRetribusiMasyarakatProgress = exports.getTagihanWajibRetribusiMasyarakat = exports.getTagihanWajibRetribusi = exports.getNewest = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const getNewest = (wr_id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -20,6 +20,7 @@ const getNewest = (wr_id) => __awaiter(void 0, void 0, void 0, function* () {
                     wajib_retribusi_id: wr_id,
                 },
                 status: 'NEW',
+                active: true,
             },
             select: {
                 id: true,
@@ -79,6 +80,7 @@ const getTagihanWajibRetribusi = (wr_id, subwilayah_id) => __awaiter(void 0, voi
                     sub_wilayah_id: subwilayah_id,
                 },
                 status: 'NEW',
+                active: true,
             },
             select: {
                 id: true,
@@ -136,6 +138,7 @@ const getTagihanWajibRetribusiMasyarakat = (wr_id) => __awaiter(void 0, void 0, 
                     wajib_retribusi_id: wr_id,
                 },
                 status: 'NEW',
+                active: true,
             },
             select: {
                 id: true,
@@ -251,7 +254,7 @@ const getPaidTagihanWajibRetribusi = (petugas_id, subwilayah_id, status) => __aw
                 },
                 TransaksiPetugas: {
                     petugas_id: petugas_id,
-                    status: status,
+                    is_stored: true,
                 },
             },
             select: {
@@ -303,6 +306,46 @@ const getPaidTagihanWajibRetribusi = (petugas_id, subwilayah_id, status) => __aw
     }
 });
 exports.getPaidTagihanWajibRetribusi = getPaidTagihanWajibRetribusi;
+const getTagihan = (subwilayah_id) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield prisma.tagihan.findMany({
+            where: {
+                status: 'NEW',
+                kontrak: {
+                    sub_wilayah_id: subwilayah_id,
+                },
+            },
+            select: {
+                id: true,
+                nama: true,
+                jatuh_tempo: true,
+                status: true,
+                total_harga: true,
+                kontrak: {
+                    select: {
+                        wajib_retribusi: {
+                            select: {
+                                users: {
+                                    select: {
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                        sub_wilayah: {
+                            select: { id: true, nama: true },
+                        },
+                    },
+                },
+            },
+        });
+        return data;
+    }
+    catch (error) {
+        throw error;
+    }
+});
+exports.getTagihan = getTagihan;
 const getDetailTagihan = (tagihan_id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield prisma.tagihan.findUnique({

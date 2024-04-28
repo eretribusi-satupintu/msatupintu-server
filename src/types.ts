@@ -1,4 +1,4 @@
-import { LokasiSetoran } from '@prisma/client';
+import { LokasiSetoran, StatusTagihanManual } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 
 export interface User {
@@ -75,6 +75,7 @@ export interface IVirtualAccountNotification {
 }
 
 export interface ISetoran {
+  transaksi_petugas: number[];
   waktu_penyetoran: string;
   total: number;
   lokasi_penyetoran: LokasiSetoran;
@@ -90,6 +91,14 @@ export interface ITransaksiPetugas {
   status?: string;
 }
 
+export interface ITagihanManual {
+  item_retribusi_id: number;
+  detail_tagihan: string;
+  total_harga: number;
+  status: StatusTagihanManual;
+  paid_at: string;
+}
+
 export interface ICheckoutQrisRequest {
   order: {
     amount: number;
@@ -98,6 +107,13 @@ export interface ICheckoutQrisRequest {
   payment: {
     payment_due_date: number;
   };
+}
+
+export interface IUpdateUser {
+  email: string;
+  alamat: string;
+  phone_number: string;
+  photo_profile: string;
 }
 
 export enum ITagihanStatus {

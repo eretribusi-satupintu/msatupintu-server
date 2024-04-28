@@ -12,34 +12,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.login = exports.register = void 0;
+exports.logout = exports.login = void 0;
 const client_1 = require("@prisma/client");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 require("dotenv/config");
 const utils_1 = require("../utils/utils");
 const prisma = new client_1.PrismaClient();
-const register = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const emailExist = yield checkEmail(req.email);
-        if (emailExist.status) {
-            console.log(emailExist.message);
-            return emailExist.message;
-        }
-        const hashedPassword = (yield (0, utils_1.hashPassword)(req.password));
-        const data = yield prisma.user.create({
-            data: {
-                name: req.name,
-                email: req.email,
-                password: hashedPassword,
-            },
-        });
-        return { message: 'user created succesfully', user: data };
-    }
-    catch (error) {
-        throw error;
-    }
-});
-exports.register = register;
+// const register = async (req: User) => {
+//   try {
+//     const emailExist = await checkEmail(req.email);
+//     if (emailExist.status) {
+//       console.log(emailExist.message);
+//       return emailExist.message;
+//     }
+//     const hashedPassword = (await hashPassword(req.password)) as string;
+//     const data = await prisma.user.create({
+//       data: {
+//         name: req.name,
+//         email: req.email,
+//         password: hashedPassword,
+//         phone_number: req.phoneNumber
+//       },
+//     });
+//     return { message: 'user created succesfully', user: data };
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 const login = (req) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield prisma.user.findUnique({

@@ -11,6 +11,7 @@ export const getNewest = async (wr_id: number) => {
           wajib_retribusi_id: wr_id,
         },
         status: 'NEW',
+        active: true,
       },
       select: {
         id: true,
@@ -70,6 +71,7 @@ export const getTagihanWajibRetribusi = async (wr_id: number, subwilayah_id: num
           sub_wilayah_id: subwilayah_id,
         },
         status: 'NEW',
+        active: true,
       },
       select: {
         id: true,
@@ -127,6 +129,7 @@ export const getTagihanWajibRetribusiMasyarakat = async (wr_id: number) => {
           wajib_retribusi_id: wr_id,
         },
         status: 'NEW',
+        active: true,
       },
       select: {
         id: true,
@@ -242,7 +245,7 @@ export const getPaidTagihanWajibRetribusi = async (petugas_id: number, subwilaya
         },
         TransaksiPetugas: {
           petugas_id: petugas_id,
-          status: status,
+          is_stored: true,
         },
       },
       select: {
@@ -282,6 +285,46 @@ export const getPaidTagihanWajibRetribusi = async (petugas_id: number, subwilaya
                   },
                 },
               },
+            },
+          },
+        },
+      },
+    });
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getTagihan = async (subwilayah_id: number) => {
+  try {
+    const data = await prisma.tagihan.findMany({
+      where: {
+        status: 'NEW',
+        kontrak: {
+          sub_wilayah_id: subwilayah_id,
+        },
+      },
+      select: {
+        id: true,
+        nama: true,
+        jatuh_tempo: true,
+        status: true,
+        total_harga: true,
+        kontrak: {
+          select: {
+            wajib_retribusi: {
+              select: {
+                users: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+            sub_wilayah: {
+              select: { id: true, nama: true },
             },
           },
         },
