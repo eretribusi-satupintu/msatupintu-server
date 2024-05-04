@@ -67,17 +67,18 @@ model PetugasSubWilayah {
 }
 
 model TransaksiPetugas {
-  id         Int      @id @default(autoincrement())
-  tagihan_id Int      @unique
+  id         Int                    @id @default(autoincrement())
+  tagihan_id Int                    @unique
   petugas_id Int
   setoran_id Int?
-  tagihan    Tagihan  @relation(fields: [tagihan_id], references: [id])
-  petugas    Petugas  @relation(fields: [petugas_id], references: [id])
-  setoran    Setoran? @relation(fields: [setoran_id], references: [id])
+  tagihan    Tagihan                @relation(fields: [tagihan_id], references: [id])
+  petugas    Petugas                @relation(fields: [petugas_id], references: [id])
+  setoran    Setoran?               @relation(fields: [setoran_id], references: [id])
   nominal    Float
-  is_stored  Boolean  @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+  status     TransaksiPetugasStatus @default(SUCCESS)
+  is_stored  Boolean                @default(false)
+  created_at DateTime               @default(now())
+  updated_at DateTime               @default(now()) @updatedAt
 
   @@map("transaksi_petugas")
 }
@@ -210,6 +211,7 @@ model TagihanManual {
   item_retribusi_id Int
   petugas_id        Int
   sub_wilayah_id    Int
+  setoran_id        Int?
   detail_tagihan    String
   total_harga       Int
   status            StatusTagihanManual
@@ -217,8 +219,10 @@ model TagihanManual {
   paid_at           DateTime?
   created_at        DateTime            @default(now())
   updated_at        DateTime            @default(now()) @updatedAt
+  is_stored         Boolean             @default(false)
   petugas           Petugas             @relation(fields: [petugas_id], references: [id])
   subwilayah        SubWilayah          @relation(fields: [sub_wilayah_id], references: [id])
+  setoran           Setoran?            @relation(fields: [setoran_id], references: [id])
 
   @@map("tagihan_manual")
 }
@@ -252,6 +256,7 @@ model Setoran {
   created_at        DateTime           @default(now())
   updated_at        DateTime           @default(now()) @updatedAt
   TransaksiPetugas  TransaksiPetugas[]
+  TagihanManual     TagihanManual[]
 
   @@map("setoran")
 }
@@ -303,6 +308,7 @@ enum Jenistagihan {
 
 enum StatusBayar {
   NEW
+  WAITING
   VERIFIED
   STORED
 }
@@ -317,6 +323,11 @@ enum Status {
   SUCCESS
   WAITING
   FAILED
+}
+
+enum TransaksiPetugasStatus {
+  SUCCESS
+  WAITING
 }
 
 enum StatusKontrak {

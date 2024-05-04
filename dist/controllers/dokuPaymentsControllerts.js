@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getQrisCheckoutPage = exports.paymentNotification = exports.getVirtualAccount = exports.getToken = void 0;
+exports.getAllVirtualAccountPayments = exports.getQrisCheckoutPage = exports.paymentNotification = exports.getVirtualAccount = void 0;
 const client_1 = require("@prisma/client");
 const axios_1 = __importDefault(require("axios"));
 const crypto_1 = __importDefault(require("crypto"));
@@ -84,34 +84,32 @@ const generateXSignature = (secretKey, stringToSign) => {
     const signature = signer.sign(secretKey, 'base64');
     return signature;
 };
-const getToken = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const apiUrl = process.env.DOKU_VA_BASE_URL;
-        const clientId = process.env.DOKU_CLIENT_ID;
-        const secretKey = process.env.DOKU_SECRET_KEY;
-        const signature = generateXSignature(secretKey, `${clientId}|${formattedWibTimestamp}`);
-        const requestTarget = '/authorization/v1/access-token/b2b';
-        const body = {
-            grantType: 'BRN-0251-1709171991384',
-            additionalInfo: '',
-        };
-        const headers = {
-            'X-SIGNATURE': signature,
-            'X-TIMESTAMP': formattedWibTimestamp,
-            'X-CLIENT-KEY': process.env.DOKU_SECRET_KEY,
-        };
-        const data = yield axios_1.default.post(apiUrl + requestTarget, body, { headers });
-        if (data.status != 200) {
-            throw data;
-        }
-        return data.data;
-    }
-    catch (error) {
-        console.log({ error: error });
-        throw error.response;
-    }
-});
-exports.getToken = getToken;
+// const getToken = async () => {
+//   try {
+//     const apiUrl = process.env.DOKU_VA_BASE_URL;
+//     const clientId = process.env.DOKU_CLIENT_ID;
+//     const secretKey = process.env.DOKU_SECRET_KEY;
+//     const signature = generateXSignature(secretKey!, `${clientId}|${formattedWibTimestamp}`);
+//     const requestTarget = '/authorization/v1/access-token/b2b';
+//     const body = {
+//       grantType: 'BRN-0251-1709171991384',
+//       additionalInfo: '',
+//     };
+//     const headers = {
+//       'X-SIGNATURE': signature,
+//       'X-TIMESTAMP': formattedWibTimestamp,
+//       'X-CLIENT-KEY': process.env.DOKU_SECRET_KEY,
+//     };
+//     const data = await axios.post(apiUrl! + requestTarget, body, { headers });
+//     if (data.status != 200) {
+//       throw data;
+//     }
+//     return data.data;
+//   } catch (error) {
+//     console.log({ error: error });
+//     throw (error as any).response;
+//   }
+// };
 const getVirtualAccount = (request_id, tagihan_id, request_timestamp, req, bank) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const apiUrl = process.env.DOKU_VA_BASE_URL;
@@ -163,6 +161,7 @@ const getVirtualAccount = (request_id, tagihan_id, request_timestamp, req, bank)
             },
         });
         const response = {
+            tagihan_id: tagihan_id,
             bank: storeData.virtual_account[0].bank,
             virtual_account_number: storeData.virtual_account[0].virtual_account_number,
             created_date: storeData.virtual_account[0].created_date,
@@ -260,6 +259,16 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
                 status: 'SUCCESS',
             },
         });
+        const deleteVa = yield prisma.virtualAccount.deleteMany({
+            where: {
+                pembayaran: {
+                    tagihan_id: req.tagihan_id,
+                },
+                NOT: {
+                    status: 'SUCCESS',
+                },
+            },
+        });
         return { status: 'OK', data: tagihan.id };
     }
     catch (error) {
@@ -268,3 +277,49 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.paymentNotification = paymentNotification;
+const getAllVirtualAccountPayments = (wr_id, status) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield prisma.virtualAccount.findMany({
+            where: {
+                pembayaran: {
+                    tagihan: {
+                        kontrak: {
+                            wajib_retribusi_id: wr_id,
+                        },
+                    },
+                },
+                status: status,
+            },
+            include: {
+                pembayaran: {
+                    select: {
+                        tagihan: {
+                            select: {
+                                id: true,
+                                total_harga: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        const dataList = [];
+        data.map((va) => dataList.push({
+            id: va.id,
+            tagihan_id: va.pembayaran.tagihan.id,
+            bank: va.bank,
+            virtual_account_number: va.virtual_account_number,
+            created_date: va.created_date.toISOString(),
+            expired_date: va.expired_date.toISOString(),
+            harga: va.pembayaran.tagihan.total_harga,
+            how_to_pay_page: va.how_to_pay_page,
+            how_to_pay_api: va.how_to_pay_api,
+        }));
+        return dataList;
+    }
+    catch (error) {
+        console.log({ error: error });
+        throw error;
+    }
+});
+exports.getAllVirtualAccountPayments = getAllVirtualAccountPayments;

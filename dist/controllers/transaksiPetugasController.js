@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBillAmount = exports.petugasCancelPayTagihan = exports.petugasPayTagihan = void 0;
+exports.synchronizationLocalPayment = exports.getBillAmount = exports.petugasCancelPayTagihan = exports.petugasPayTagihan = void 0;
 const client_1 = require("@prisma/client");
 const tagihanController_1 = require("./tagihanController");
 const prisma = new client_1.PrismaClient();
@@ -21,6 +21,7 @@ const petugasPayTagihan = (transaksiPetugas) => __awaiter(void 0, void 0, void 0
             },
             data: {
                 status: 'VERIFIED',
+                payment_time: new Date().toISOString(),
             },
         });
         const petugasTransaksi = yield prisma.transaksiPetugas.create({
@@ -45,15 +46,23 @@ const petugasCancelPayTagihan = (tagihan_id) => __awaiter(void 0, void 0, void 0
                 id: tagihan_id,
             },
             data: {
-                status: 'NEW',
+                status: 'WAITING',
+                TransaksiPetugas: {
+                    update: {
+                        status: 'WAITING',
+                    },
+                },
             },
             include: {
                 TransaksiPetugas: true,
             },
         });
-        const petugasTransaksi = yield prisma.transaksiPetugas.delete({
+        const petugasTransaksi = yield prisma.transaksiPetugas.update({
             where: {
                 id: tagihan.TransaksiPetugas.id,
+            },
+            data: {
+                status: 'WAITING',
             },
         });
         const tagihanDetail = yield (0, tagihanController_1.getDetailTagihan)(tagihan_id);
@@ -66,10 +75,22 @@ const petugasCancelPayTagihan = (tagihan_id) => __awaiter(void 0, void 0, void 0
 exports.petugasCancelPayTagihan = petugasCancelPayTagihan;
 const getBillAmount = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const totalTagihanManual = yield prisma.tagihanManual.findMany({
+            where: {
+                petugas_id: petugas_id,
+                is_stored: false,
+                sub_wilayah_id: sub_wilayah_id,
+            },
+            select: {
+                id: true,
+                total_harga: true,
+            },
+        });
         const totalTagihan = yield prisma.transaksiPetugas.findMany({
             where: {
                 petugas_id: petugas_id,
                 is_stored: false,
+                status: 'SUCCESS',
                 AND: {
                     tagihan: {
                         kontrak: {
@@ -84,13 +105,50 @@ const getBillAmount = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, 
             },
         });
         let sumTagihan = 0;
+        let sumTagihanManual = 0;
         totalTagihan.map((transaksi) => {
             sumTagihan += transaksi.nominal;
         });
-        return { transaksi_petugas: totalTagihan, total: sumTagihan };
+        totalTagihanManual.map((transaksi) => {
+            sumTagihanManual += transaksi.total_harga;
+        });
+        return { transaksi_petugas: totalTagihan, total: sumTagihan, tagihan_manual: totalTagihanManual, total_tagihan_manual: sumTagihanManual };
     }
     catch (error) {
         throw error;
     }
 });
 exports.getBillAmount = getBillAmount;
+const checkTransaksiExist = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const transaksiPetugas = yield prisma.transaksiPetugas.findUnique({
+        where: {
+            tagihan_id: id,
+        },
+    });
+    if (transaksiPetugas) {
+        return true;
+    }
+    else {
+        return false;
+    }
+});
+const synchronizationLocalPayment = (petugas_id, req) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        for (const tagihan_id of req.tagihan_local_id) {
+            if ((yield checkTransaksiExist(tagihan_id)) == false) {
+                const transaksiPetugas = {
+                    petugas_id: petugas_id,
+                    tagihan_id: tagihan_id,
+                    nominal: req.amount,
+                };
+                yield (0, exports.petugasPayTagihan)(transaksiPetugas);
+            }
+        }
+        // const transaksiPetugas = await prisma.transaksiPetugas.findMany();
+        return { status: 'success' };
+    }
+    catch (error) {
+        throw error;
+    }
+});
+exports.synchronizationLocalPayment = synchronizationLocalPayment;

@@ -3,7 +3,7 @@ import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
-import { ICheckoutQrisRequest, IVirtualAccountnumberRequest } from '../types';
+import { ICheckoutQrisRequest, IVirtualAccountResponse, IVirtualAccountnumberRequest } from '../types';
 const prisma = new PrismaClient();
 dotenv.config();
 
@@ -87,35 +87,35 @@ const generateXSignature = (secretKey: string, stringToSign: string) => {
   return signature;
 };
 
-const getToken = async () => {
-  try {
-    const apiUrl = process.env.DOKU_VA_BASE_URL;
-    const clientId = process.env.DOKU_CLIENT_ID;
-    const secretKey = process.env.DOKU_SECRET_KEY;
-    const signature = generateXSignature(secretKey!, `${clientId}|${formattedWibTimestamp}`);
-    const requestTarget = '/authorization/v1/access-token/b2b';
-    const body = {
-      grantType: 'BRN-0251-1709171991384',
-      additionalInfo: '',
-    };
+// const getToken = async () => {
+//   try {
+//     const apiUrl = process.env.DOKU_VA_BASE_URL;
+//     const clientId = process.env.DOKU_CLIENT_ID;
+//     const secretKey = process.env.DOKU_SECRET_KEY;
+//     const signature = generateXSignature(secretKey!, `${clientId}|${formattedWibTimestamp}`);
+//     const requestTarget = '/authorization/v1/access-token/b2b';
+//     const body = {
+//       grantType: 'BRN-0251-1709171991384',
+//       additionalInfo: '',
+//     };
 
-    const headers = {
-      'X-SIGNATURE': signature,
-      'X-TIMESTAMP': formattedWibTimestamp,
-      'X-CLIENT-KEY': process.env.DOKU_SECRET_KEY,
-    };
-    const data = await axios.post(apiUrl! + requestTarget, body, { headers });
+//     const headers = {
+//       'X-SIGNATURE': signature,
+//       'X-TIMESTAMP': formattedWibTimestamp,
+//       'X-CLIENT-KEY': process.env.DOKU_SECRET_KEY,
+//     };
+//     const data = await axios.post(apiUrl! + requestTarget, body, { headers });
 
-    if (data.status != 200) {
-      throw data;
-    }
-    return data.data;
-  } catch (error) {
-    console.log({ error: error });
+//     if (data.status != 200) {
+//       throw data;
+//     }
+//     return data.data;
+//   } catch (error) {
+//     console.log({ error: error });
 
-    throw (error as any).response;
-  }
-};
+//     throw (error as any).response;
+//   }
+// };
 
 const getVirtualAccount = async (
   request_id: string,
@@ -179,6 +179,7 @@ const getVirtualAccount = async (
     });
 
     const response = {
+      tagihan_id: tagihan_id,
       bank: storeData.virtual_account[0].bank,
       virtual_account_number: storeData.virtual_account[0].virtual_account_number,
       created_date: storeData.virtual_account[0].created_date,
@@ -287,6 +288,17 @@ const paymentNotification = async (req: any) => {
       },
     });
 
+    const deleteVa = await prisma.virtualAccount.deleteMany({
+      where: {
+        pembayaran: {
+          tagihan_id: req.tagihan_id,
+        },
+        NOT: {
+          status: 'SUCCESS',
+        },
+      },
+    });
+
     return { status: 'OK', data: tagihan.id };
   } catch (error) {
     console.log({ error: error });
@@ -294,4 +306,54 @@ const paymentNotification = async (req: any) => {
   }
 };
 
-export { getToken, getVirtualAccount, paymentNotification, getQrisCheckoutPage };
+const getAllVirtualAccountPayments = async (wr_id: number, status: string) => {
+  try {
+    const data = await prisma.virtualAccount.findMany({
+      where: {
+        pembayaran: {
+          tagihan: {
+            kontrak: {
+              wajib_retribusi_id: wr_id,
+            },
+          },
+        },
+        status: status,
+      },
+      include: {
+        pembayaran: {
+          select: {
+            tagihan: {
+              select: {
+                id: true,
+                total_harga: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const dataList: IVirtualAccountResponse[] = [];
+
+    data.map((va) =>
+      dataList.push({
+        id: va.id,
+        tagihan_id: va.pembayaran.tagihan.id,
+        bank: va.bank,
+        virtual_account_number: va.virtual_account_number,
+        created_date: va.created_date.toISOString(),
+        expired_date: va.expired_date.toISOString(),
+        harga: va.pembayaran.tagihan.total_harga,
+        how_to_pay_page: va.how_to_pay_page,
+        how_to_pay_api: va.how_to_pay_api,
+      }),
+    );
+
+    return dataList;
+  } catch (error) {
+    console.log({ error: error });
+    throw error;
+  }
+};
+
+export { getVirtualAccount, paymentNotification, getQrisCheckoutPage, getAllVirtualAccountPayments };

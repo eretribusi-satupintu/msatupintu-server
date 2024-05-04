@@ -73,10 +73,11 @@ const login = (req) => __awaiter(void 0, void 0, void 0, function* () {
             nik: user.nik,
             pin: user.pin,
             role_id: user.role_id,
+            profile_photo_url: user.photo_profile,
         };
         const playload = user.id.toString();
         const secret = process.env.SECRET_KEY.toString();
-        const expired = 60 * 60 * 1;
+        const expired = 60 * 60 * 24;
         const token = jsonwebtoken_1.default.sign({ playload }, secret, {
             expiresIn: expired,
         });

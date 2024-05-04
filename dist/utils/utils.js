@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatResponseToISO8601 = exports.checkPassword = exports.hashPassword = void 0;
+exports.getCurrentDateTime = exports.formatResponseToISO8601 = exports.checkPassword = exports.hashPassword = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const hashPassword = (password) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -43,3 +43,15 @@ const formatResponseToISO8601 = (inputString) => {
     return isoDateTime;
 };
 exports.formatResponseToISO8601 = formatResponseToISO8601;
+function getCurrentDateTime() {
+    const now = new Date();
+    // Get the ISO string representation of the current date and time
+    const isoString = now.toISOString();
+    // Extract date and time components
+    const datePart = isoString.slice(0, 10);
+    const timePart = isoString.slice(11, 23);
+    // Combine date and time parts with a space separator
+    const dateTimeString = `${datePart}:${timePart}`;
+    return dateTimeString;
+}
+exports.getCurrentDateTime = getCurrentDateTime;

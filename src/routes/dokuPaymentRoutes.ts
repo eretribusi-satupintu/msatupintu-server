@@ -1,14 +1,27 @@
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import { getQrisCheckoutPage, getToken, getVirtualAccount, paymentNotification } from '../controllers/dokuPaymentsControllerts';
+import { getAllVirtualAccountPayments, getQrisCheckoutPage, getVirtualAccount, paymentNotification } from '../controllers/dokuPaymentsControllerts';
 
 const router = express.Router();
 router.use(bodyParser.json());
 
-router.post('/token', async (req: Request, res: Response) => {
+// router.post('/token', async (req: Request, res: Response) => {
+//   try {
+//     // res.status(200).json({ data: req.body.payment_order });
+//     const data = await getToken();
+//     console.log({ routes: data });
+//     res.status(200).json({ data: data });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({
+//       message: err,
+//     });
+//   }
+// });
+
+router.post('/virtual-account', async (req: Request, res: Response) => {
   try {
-    // res.status(200).json({ data: req.body.payment_order });
-    const data = await getToken();
+    const data = await getVirtualAccount(req.body.request_id, req.body.tagihan_id, req.body.request_timestamp, req.body.payment_order, req.body.bank);
     console.log({ routes: data });
     res.status(200).json({ data: data });
   } catch (err) {
@@ -19,10 +32,10 @@ router.post('/token', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/virtual-account', async (req: Request, res: Response) => {
+router.get('/virtual-account/wajib-retribusi/:wr_id/status/:status', async (req: Request, res: Response) => {
   try {
-    const data = await getVirtualAccount(req.body.request_id, req.body.tagihan_id, req.body.request_timestamp, req.body.payment_order, req.body.bank);
-    console.log({ routes: data });
+    const data = await getAllVirtualAccountPayments(Number(req.params.wr_id), req.params.status);
+    console.log({ data: data });
     res.status(200).json({ data: data });
   } catch (err) {
     console.log(err);

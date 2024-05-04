@@ -67,11 +67,12 @@ const login = async (req: User) => {
       nik: user.nik,
       pin: user.pin,
       role_id: user.role_id,
+      profile_photo_url: user.photo_profile,
     };
 
     const playload = user!.id.toString();
     const secret = process.env.SECRET_KEY!.toString();
-    const expired = 60 * 60 * 1;
+    const expired = 60 * 60 * 24;
 
     const token = jwt.sign({ playload }, secret, {
       expiresIn: expired,

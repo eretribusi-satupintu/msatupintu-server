@@ -53,6 +53,21 @@ export const storeSetoran = async (petugas_id: number, sub_wilayah_id: number, r
       const transaksiPetugas = await prisma.transaksiPetugas.update({
         where: {
           id: item,
+          tagihan: {
+            status: 'VERIFIED',
+          },
+        },
+        data: {
+          setoran_id: setoran.id,
+          is_stored: true,
+        },
+      });
+    });
+
+    req.tagihan_manual.forEach(async (item) => {
+      const tagihanManual = await prisma.tagihanManual.update({
+        where: {
+          id: item,
         },
         data: {
           setoran_id: setoran.id,

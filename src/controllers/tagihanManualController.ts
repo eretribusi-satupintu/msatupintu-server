@@ -9,6 +9,7 @@ export const getTagihanManual = async (petugas_id: number, subwilayah_id: number
       where: {
         petugas_id: petugas_id,
         sub_wilayah_id: subwilayah_id,
+        is_stored: false,
       },
       select: {
         id: true,

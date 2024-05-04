@@ -31,4 +31,20 @@ const formatResponseToISO8601 = (inputString: string): string => {
   return isoDateTime;
 };
 
-export { hashPassword, checkPassword, formatResponseToISO8601 };
+function getCurrentDateTime(): string {
+  const now = new Date();
+
+  // Get the ISO string representation of the current date and time
+  const isoString = now.toISOString();
+
+  // Extract date and time components
+  const datePart = isoString.slice(0, 10);
+  const timePart = isoString.slice(11, 23);
+
+  // Combine date and time parts with a space separator
+  const dateTimeString = `${datePart}:${timePart}`;
+
+  return dateTimeString;
+}
+
+export { hashPassword, checkPassword, formatResponseToISO8601, getCurrentDateTime };

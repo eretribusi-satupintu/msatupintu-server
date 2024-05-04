@@ -24,6 +24,18 @@ export interface IVirtualAccountInfo {
   info_1?: string;
 }
 
+export interface IVirtualAccountResponse {
+  id: number;
+  tagihan_id: number;
+  bank: string;
+  virtual_account_number: string;
+  created_date: string;
+  expired_date: string;
+  harga: number;
+  how_to_pay_page: string;
+  how_to_pay_api: string;
+}
+
 export interface IOrder {
   invoice_number: number;
   amount: Decimal;
@@ -76,6 +88,7 @@ export interface IVirtualAccountNotification {
 
 export interface ISetoran {
   transaksi_petugas: number[];
+  tagihan_manual: number[];
   waktu_penyetoran: string;
   total: number;
   lokasi_penyetoran: LokasiSetoran;

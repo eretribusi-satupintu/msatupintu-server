@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import { getBillAmount, petugasCancelPayTagihan, petugasPayTagihan } from '../controllers/transaksiPetugasController';
+import { getBillAmount, petugasCancelPayTagihan, petugasPayTagihan, synchronizationLocalPayment } from '../controllers/transaksiPetugasController';
 
 const router = express.Router();
 router.use(bodyParser.json());
@@ -32,6 +32,18 @@ router.post('/pay/cash', async (req: Request, res: Response) => {
 router.post('/pay/cash/cancel', async (req: Request, res: Response) => {
   try {
     const data = await petugasCancelPayTagihan(req.body.tagihan_id);
+    res.status(200).json({ data: data });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: error,
+    });
+  }
+});
+
+router.post('/synchronization/petugas/:petugas_id', async (req: Request, res: Response) => {
+  try {
+    const data = await synchronizationLocalPayment(Number(req.params.petugas_id), req.body);
     res.status(200).json({ data: data });
   } catch (error) {
     console.log(error);

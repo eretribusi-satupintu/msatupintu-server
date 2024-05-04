@@ -11,11 +11,11 @@ export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: numb
           some: {
             sub_wilayah: {
               id: sub_wilayah_id,
-              petugas: {
-                some: {
-                  id: petugas_id,
-                },
-              },
+              // petugas: {
+              //   some: {
+              //     id: petugas_id,
+              //   },
+              // },
             },
             tagihan: {
               some: {
@@ -46,6 +46,9 @@ export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: numb
                   where: {
                     status: 'NEW',
                     active: true,
+                    jatuh_tempo: {
+                      lt: new Date(),
+                    },
                   },
                 },
               },
@@ -66,7 +69,7 @@ export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: numb
         nik: item.users.nik,
         no_telepon: item.users.phone_number,
         photo_profile: item.users.phone_number,
-        jumlah_kontrak: jumlahTagihan,
+        jumlah_tagihan: jumlahTagihan,
       };
     });
 
@@ -92,11 +95,17 @@ export const getWajibRetribusiDetail = async (wr_id: number, sub_wilayah_id: num
           },
         },
         kontrak: {
+          where: {
+            sub_wilayah_id: sub_wilayah_id,
+          },
           include: {
             _count: {
               select: {
                 tagihan: {
                   where: {
+                    jatuh_tempo: {
+                      lt: new Date(),
+                    },
                     status: 'NEW',
                     active: true,
                   },
@@ -120,7 +129,7 @@ export const getWajibRetribusiDetail = async (wr_id: number, sub_wilayah_id: num
       nik: data!.users.nik,
       no_telepon: data!.users.phone_number,
       photo_profile: data!.users.phone_number,
-      jumlah_kontrak: jumlah_tagihan,
+      jumlah_tagihan: jumlah_tagihan,
     };
 
     return formattedData;

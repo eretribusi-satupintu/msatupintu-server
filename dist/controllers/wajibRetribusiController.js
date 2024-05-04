@@ -20,11 +20,11 @@ const getWajibRetribusi = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void
                     some: {
                         sub_wilayah: {
                             id: sub_wilayah_id,
-                            petugas: {
-                                some: {
-                                    id: petugas_id,
-                                },
-                            },
+                            // petugas: {
+                            //   some: {
+                            //     id: petugas_id,
+                            //   },
+                            // },
                         },
                         tagihan: {
                             some: {
@@ -55,6 +55,9 @@ const getWajibRetribusi = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void
                                     where: {
                                         status: 'NEW',
                                         active: true,
+                                        jatuh_tempo: {
+                                            lt: new Date(),
+                                        },
                                     },
                                 },
                             },
@@ -74,7 +77,7 @@ const getWajibRetribusi = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void
                 nik: item.users.nik,
                 no_telepon: item.users.phone_number,
                 photo_profile: item.users.phone_number,
-                jumlah_kontrak: jumlahTagihan,
+                jumlah_tagihan: jumlahTagihan,
             };
         });
         return formattedData;
@@ -100,11 +103,17 @@ const getWajibRetribusiDetail = (wr_id, sub_wilayah_id) => __awaiter(void 0, voi
                     },
                 },
                 kontrak: {
+                    where: {
+                        sub_wilayah_id: sub_wilayah_id,
+                    },
                     include: {
                         _count: {
                             select: {
                                 tagihan: {
                                     where: {
+                                        jatuh_tempo: {
+                                            lt: new Date(),
+                                        },
                                         status: 'NEW',
                                         active: true,
                                     },
@@ -125,7 +134,7 @@ const getWajibRetribusiDetail = (wr_id, sub_wilayah_id) => __awaiter(void 0, voi
             nik: data.users.nik,
             no_telepon: data.users.phone_number,
             photo_profile: data.users.phone_number,
-            jumlah_kontrak: jumlah_tagihan,
+            jumlah_tagihan: jumlah_tagihan,
         };
         return formattedData;
     }

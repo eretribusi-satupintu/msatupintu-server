@@ -63,6 +63,7 @@ const getNewest = (wr_id) => __awaiter(void 0, void 0, void 0, function* () {
                     },
                 },
             },
+            take: 3,
         });
         return data;
     }
@@ -75,6 +76,9 @@ const getTagihanWajibRetribusi = (wr_id, subwilayah_id) => __awaiter(void 0, voi
     try {
         const data = yield prisma.tagihan.findMany({
             where: {
+                jatuh_tempo: {
+                    lt: new Date(),
+                },
                 kontrak: {
                     wajib_retribusi_id: wr_id,
                     sub_wilayah_id: subwilayah_id,
@@ -134,6 +138,9 @@ const getTagihanWajibRetribusiMasyarakat = (wr_id) => __awaiter(void 0, void 0, 
     try {
         const data = yield prisma.tagihan.findMany({
             where: {
+                jatuh_tempo: {
+                    lt: new Date(),
+                },
                 kontrak: {
                     wajib_retribusi_id: wr_id,
                 },
@@ -181,6 +188,63 @@ const getTagihanWajibRetribusiMasyarakat = (wr_id) => __awaiter(void 0, void 0, 
                 },
             },
         });
+        const active_data = yield prisma.tagihan.findFirst({
+            where: {
+                jatuh_tempo: {
+                    gt: new Date(),
+                },
+                kontrak: {
+                    wajib_retribusi_id: wr_id,
+                },
+                status: 'NEW',
+                active: true,
+            },
+            select: {
+                id: true,
+                request_id: true,
+                invoice_id: true,
+                nama: true,
+                jatuh_tempo: true,
+                status: true,
+                total_harga: true,
+                kontrak: {
+                    select: {
+                        wajib_retribusi: {
+                            select: {
+                                users: {
+                                    select: {
+                                        name: true,
+                                        phone_number: true,
+                                        email: true,
+                                    },
+                                },
+                            },
+                        },
+                        item_retribusi: {
+                            select: {
+                                kategori_nama: true,
+                                jenis_tagihan: true,
+                                retribusi: {
+                                    select: {
+                                        nama: true,
+                                        kedinasan: {
+                                            select: {
+                                                nama: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        if (active_data !== null) {
+            const tagihan = [...data, active_data];
+            return tagihan;
+        }
+        5;
         return data;
     }
     catch (error) {
@@ -249,12 +313,13 @@ const getPaidTagihanWajibRetribusi = (petugas_id, subwilayah_id, status) => __aw
     try {
         const data = yield prisma.tagihan.findMany({
             where: {
+                status: status,
                 kontrak: {
                     sub_wilayah_id: subwilayah_id,
                 },
                 TransaksiPetugas: {
                     petugas_id: petugas_id,
-                    is_stored: true,
+                    is_stored: false,
                 },
             },
             select: {
@@ -311,9 +376,7 @@ const getTagihan = (subwilayah_id) => __awaiter(void 0, void 0, void 0, function
         const data = yield prisma.tagihan.findMany({
             where: {
                 status: 'NEW',
-                kontrak: {
-                    sub_wilayah_id: subwilayah_id,
-                },
+                active: true,
             },
             select: {
                 id: true,

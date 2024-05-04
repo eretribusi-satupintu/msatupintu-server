@@ -60,6 +60,20 @@ const storeSetoran = (petugas_id, sub_wilayah_id, req) => __awaiter(void 0, void
             const transaksiPetugas = yield prisma.transaksiPetugas.update({
                 where: {
                     id: item,
+                    tagihan: {
+                        status: 'VERIFIED',
+                    },
+                },
+                data: {
+                    setoran_id: setoran.id,
+                    is_stored: true,
+                },
+            });
+        }));
+        req.tagihan_manual.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
+            const tagihanManual = yield prisma.tagihanManual.update({
+                where: {
+                    id: item,
                 },
                 data: {
                     setoran_id: setoran.id,

@@ -18,6 +18,7 @@ const getTagihanManual = (petugas_id, subwilayah_id) => __awaiter(void 0, void 0
             where: {
                 petugas_id: petugas_id,
                 sub_wilayah_id: subwilayah_id,
+                is_stored: false,
             },
             select: {
                 id: true,
