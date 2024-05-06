@@ -27,14 +27,20 @@ const prisma = new client_1.PrismaClient();
 // };
 const getItemRetribusi = (subwilayah_id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const subwilayah = yield prisma.subWilayah.findUnique({
-            where: {
-                id: subwilayah_id,
-            },
-        });
+        // const subwilayah = await prisma.subWilayah.findUnique({
+        //   where: {
+        //     id: subwilayah_id,
+        //   },
+        // });
         const data = yield prisma.itemRetribusi.findMany({
             where: {
-                retribusi_id: subwilayah === null || subwilayah === void 0 ? void 0 : subwilayah.id,
+                retribusi: {
+                    SubWilayah: {
+                        some: {
+                            id: subwilayah_id,
+                        },
+                    },
+                },
             },
         });
         return data;

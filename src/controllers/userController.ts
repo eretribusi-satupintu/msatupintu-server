@@ -13,6 +13,11 @@ export const getUser = async (email: string) => {
       select: {
         id: true,
         role_id: true,
+        roles: {
+          select: {
+            id: true,
+          },
+        },
         name: true,
         email: true,
         alamat: true,
@@ -56,7 +61,6 @@ export const updateUser = async (id: number, req: IUpdateUser) => {
         petugas: {
           select: {
             id: true,
-            subwilayah_id: true,
           },
         },
       },
@@ -67,7 +71,6 @@ export const updateUser = async (id: number, req: IUpdateUser) => {
       name: user.name,
       email: user.email,
       nik: user.nik,
-      pin: user.pin,
       role_id: user.role_id,
     };
 

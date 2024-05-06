@@ -15,9 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const wajibRetribusiController_1 = require("../../controllers/wajibRetribusiController");
 const router = express_1.default.Router();
-router.get('/:petugas_id/wilayah/:sub_wilayah_id/wajib-retribusi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/wilayah/:sub_wilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield (0, wajibRetribusiController_1.getWajibRetribusi)(Number(req.params.petugas_id), Number(req.params.sub_wilayah_id));
+        const data = yield (0, wajibRetribusiController_1.getWajibRetribusi)(Number(req.params.sub_wilayah_id));
         if (res.statusCode !== 200) {
             res.status(500).json({ message: 'Internal Server Error' });
         }

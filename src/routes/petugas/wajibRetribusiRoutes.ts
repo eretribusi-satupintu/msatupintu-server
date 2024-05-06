@@ -3,9 +3,9 @@ import { getWajibRetribusi, getWajibRetribusiDetail, getWajibRetribusiKontrak } 
 
 const router = express.Router();
 
-router.get('/:petugas_id/wilayah/:sub_wilayah_id/wajib-retribusi', async (req: Request, res: Response) => {
+router.get('/wilayah/:sub_wilayah_id', async (req: Request, res: Response) => {
   try {
-    const data = await getWajibRetribusi(Number(req.params.petugas_id), Number(req.params.sub_wilayah_id));
+    const data = await getWajibRetribusi(Number(req.params.sub_wilayah_id));
 
     if (res.statusCode !== 200) {
       res.status(500).json({ message: 'Internal Server Error' });

@@ -54,7 +54,6 @@ const login = (req) => __awaiter(void 0, void 0, void 0, function* () {
                 petugas: {
                     select: {
                         id: true,
-                        subwilayah_id: true,
                     },
                 },
             },
@@ -71,7 +70,6 @@ const login = (req) => __awaiter(void 0, void 0, void 0, function* () {
             name: user.name,
             email: user.email,
             nik: user.nik,
-            pin: user.pin,
             role_id: user.role_id,
             profile_photo_url: user.photo_profile,
         };

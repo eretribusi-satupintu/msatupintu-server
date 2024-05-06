@@ -11,8 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWajibRetribusiKontrak = exports.getWajibRetribusiDetail = exports.getWajibRetribusi = void 0;
 const client_1 = require("@prisma/client");
+const tagihanController_1 = require("./tagihanController");
 const prisma = new client_1.PrismaClient();
-const getWajibRetribusi = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, void 0, function* () {
+const getWajibRetribusi = (sub_wilayah_id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield prisma.wajibRetribusi.findMany({
             where: {
@@ -20,11 +21,6 @@ const getWajibRetribusi = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void
                     some: {
                         sub_wilayah: {
                             id: sub_wilayah_id,
-                            // petugas: {
-                            //   some: {
-                            //     id: petugas_id,
-                            //   },
-                            // },
                         },
                         tagihan: {
                             some: {
@@ -55,9 +51,9 @@ const getWajibRetribusi = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void
                                     where: {
                                         status: 'NEW',
                                         active: true,
-                                        jatuh_tempo: {
-                                            lt: new Date(),
-                                        },
+                                        // jatuh_tempo: {
+                                        //   lt: new Date(),
+                                        // },
                                     },
                                 },
                             },
@@ -66,21 +62,25 @@ const getWajibRetribusi = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void
                 },
             },
         });
-        const formattedData = data.map((item) => {
-            let jumlahTagihan = 0;
-            item.kontrak.map((kontrak) => {
-                jumlahTagihan += kontrak._count.tagihan;
-            });
-            return {
-                id: item.id,
-                name: item.users.name,
-                nik: item.users.nik,
-                no_telepon: item.users.phone_number,
-                photo_profile: item.users.phone_number,
-                jumlah_tagihan: jumlahTagihan,
-            };
-        });
-        return formattedData;
+        var wr_list = [];
+        yield Promise.all(data.map((wr) => __awaiter(void 0, void 0, void 0, function* () {
+            wr_list.push(yield (0, exports.getWajibRetribusiDetail)(wr.id, sub_wilayah_id));
+        })));
+        // const formattedData = data.map((item) => {
+        //   let jumlahTagihan = 0;
+        //   item.kontrak.map((kontrak) => {
+        //     jumlahTagihan += kontrak._count.tagihan;
+        //   });
+        //   return {
+        //     id: item.id,
+        //     name: item.users.name,
+        //     nik: item.users.nik,
+        //     no_telepon: item.users.phone_number,
+        //     photo_profile: item.users.phone_number,
+        //     jumlah_tagihan: jumlahTagihan,
+        //   };
+        // });
+        return wr_list;
     }
     catch (error) {
         throw error;
@@ -111,9 +111,6 @@ const getWajibRetribusiDetail = (wr_id, sub_wilayah_id) => __awaiter(void 0, voi
                             select: {
                                 tagihan: {
                                     where: {
-                                        jatuh_tempo: {
-                                            lt: new Date(),
-                                        },
                                         status: 'NEW',
                                         active: true,
                                     },
@@ -124,17 +121,17 @@ const getWajibRetribusiDetail = (wr_id, sub_wilayah_id) => __awaiter(void 0, voi
                 },
             },
         });
-        let jumlah_tagihan = 0;
-        data === null || data === void 0 ? void 0 : data.kontrak.map((tagihan) => {
-            jumlah_tagihan += tagihan._count.tagihan;
-        });
+        let jumlah_tagihan = yield (0, tagihanController_1.getTagihanWajibRetribusi)(wr_id, sub_wilayah_id);
+        // data?.kontrak.map((tagihan) => {
+        //   jumlah_tagihan += tagihan._count.tagihan;
+        // });
         const formattedData = {
             id: data.id,
             name: data.users.name,
             nik: data.users.nik,
             no_telepon: data.users.phone_number,
             photo_profile: data.users.phone_number,
-            jumlah_tagihan: jumlah_tagihan,
+            jumlah_tagihan: jumlah_tagihan.length,
         };
         return formattedData;
     }

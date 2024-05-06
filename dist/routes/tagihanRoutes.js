@@ -94,9 +94,9 @@ router.get('/petugas/:petugas_id/sub-wilayah/:subwilayah_id/status/:status', (re
         });
     }
 }));
-router.get('/petugas/sub-wilayah/:subwilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/petugas/:petugas_id/sub-wilayah/:subwilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield (0, tagihanController_1.getTagihan)(Number(req.params.subwilayah_id));
+        const data = yield (0, tagihanController_1.getTagihan)(Number(req.params.petugas_id), Number(req.params.subwilayah_id));
         res.status(200).json({ data: data });
     }
     catch (error) {

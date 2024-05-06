@@ -16,15 +16,21 @@ const prisma = new PrismaClient();
 
 const getItemRetribusi = async (subwilayah_id: number) => {
   try {
-    const subwilayah = await prisma.subWilayah.findUnique({
-      where: {
-        id: subwilayah_id,
-      },
-    });
+    // const subwilayah = await prisma.subWilayah.findUnique({
+    //   where: {
+    //     id: subwilayah_id,
+    //   },
+    // });
 
     const data = await prisma.itemRetribusi.findMany({
       where: {
-        retribusi_id: subwilayah?.id,
+        retribusi: {
+          SubWilayah: {
+            some: {
+              id: subwilayah_id,
+            },
+          },
+        },
       },
     });
 

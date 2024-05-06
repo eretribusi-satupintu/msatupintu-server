@@ -45,7 +45,6 @@ const login = async (req: User) => {
         petugas: {
           select: {
             id: true,
-            subwilayah_id: true,
           },
         },
       },
@@ -65,7 +64,7 @@ const login = async (req: User) => {
       name: user.name,
       email: user.email,
       nik: user.nik,
-      pin: user.pin,
+
       role_id: user.role_id,
       profile_photo_url: user.photo_profile,
     };

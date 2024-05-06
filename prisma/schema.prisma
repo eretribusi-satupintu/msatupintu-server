@@ -24,7 +24,6 @@ model User {
   email           String          @unique
   password        String
   nik             String?         @unique
-  pin             Int?
   phone_number    String
   photo_profile   String?
   alamat          String
@@ -40,8 +39,6 @@ model User {
 model Petugas {
   id                Int                 @id @default(autoincrement())
   user_id           Int                 @unique
-  subwilayah_id     Int
-  subwilayah        SubWilayah          @relation(fields: [subwilayah_id], references: [id])
   users             User                @relation(fields: [user_id], references: [id])
   created_at        DateTime            @default(now())
   updated_at        DateTime            @default(now()) @updatedAt
@@ -50,7 +47,6 @@ model Petugas {
   Setoran           Setoran[]
   TagihanManual     TagihanManual[]
 
-  @@index([subwilayah_id], map: "petugas_subwilayah_id_fkey")
   @@map("petugas")
 }
 
@@ -122,7 +118,6 @@ model SubWilayah {
   retribusi_id      Int                 @default(1)
   nama              String
   kontrak           Kontrak[]
-  petugas           Petugas[]
   retribusi         Retribusi           @relation(fields: [retribusi_id], references: [id])
   created_at        DateTime            @default(now())
   updated_at        DateTime            @default(now()) @updatedAt

@@ -1,9 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import Kontrak from '../mongo/models/Kontrak';
+import { getTagihanWajibRetribusi } from './tagihanController';
 
 const prisma = new PrismaClient();
 
-export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: number) => {
+export const getWajibRetribusi = async (sub_wilayah_id: number) => {
   try {
     const data = await prisma.wajibRetribusi.findMany({
       where: {
@@ -11,11 +12,6 @@ export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: numb
           some: {
             sub_wilayah: {
               id: sub_wilayah_id,
-              // petugas: {
-              //   some: {
-              //     id: petugas_id,
-              //   },
-              // },
             },
             tagihan: {
               some: {
@@ -46,9 +42,9 @@ export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: numb
                   where: {
                     status: 'NEW',
                     active: true,
-                    jatuh_tempo: {
-                      lt: new Date(),
-                    },
+                    // jatuh_tempo: {
+                    //   lt: new Date(),
+                    // },
                   },
                 },
               },
@@ -58,22 +54,29 @@ export const getWajibRetribusi = async (petugas_id: number, sub_wilayah_id: numb
       },
     });
 
-    const formattedData = data.map((item) => {
-      let jumlahTagihan = 0;
-      item.kontrak.map((kontrak) => {
-        jumlahTagihan += kontrak._count.tagihan;
-      });
-      return {
-        id: item.id,
-        name: item.users.name,
-        nik: item.users.nik,
-        no_telepon: item.users.phone_number,
-        photo_profile: item.users.phone_number,
-        jumlah_tagihan: jumlahTagihan,
-      };
-    });
+    var wr_list: Object[] = [];
 
-    return formattedData;
+    await Promise.all(
+      data.map(async (wr) => {
+        wr_list.push(await getWajibRetribusiDetail(wr.id, sub_wilayah_id));
+      }),
+    );
+
+    // const formattedData = data.map((item) => {
+    //   let jumlahTagihan = 0;
+    //   item.kontrak.map((kontrak) => {
+    //     jumlahTagihan += kontrak._count.tagihan;
+    //   });
+    //   return {
+    //     id: item.id,
+    //     name: item.users.name,
+    //     nik: item.users.nik,
+    //     no_telepon: item.users.phone_number,
+    //     photo_profile: item.users.phone_number,
+    //     jumlah_tagihan: jumlahTagihan,
+    //   };
+    // });
+    return wr_list;
   } catch (error) {
     throw error;
   }
@@ -103,9 +106,6 @@ export const getWajibRetribusiDetail = async (wr_id: number, sub_wilayah_id: num
               select: {
                 tagihan: {
                   where: {
-                    jatuh_tempo: {
-                      lt: new Date(),
-                    },
                     status: 'NEW',
                     active: true,
                   },
@@ -117,11 +117,11 @@ export const getWajibRetribusiDetail = async (wr_id: number, sub_wilayah_id: num
       },
     });
 
-    let jumlah_tagihan = 0;
+    let jumlah_tagihan = await getTagihanWajibRetribusi(wr_id, sub_wilayah_id);
 
-    data?.kontrak.map((tagihan) => {
-      jumlah_tagihan += tagihan._count.tagihan;
-    });
+    // data?.kontrak.map((tagihan) => {
+    //   jumlah_tagihan += tagihan._count.tagihan;
+    // });
 
     const formattedData = {
       id: data!.id,
@@ -129,7 +129,7 @@ export const getWajibRetribusiDetail = async (wr_id: number, sub_wilayah_id: num
       nik: data!.users.nik,
       no_telepon: data!.users.phone_number,
       photo_profile: data!.users.phone_number,
-      jumlah_tagihan: jumlah_tagihan,
+      jumlah_tagihan: jumlah_tagihan.length,
     };
 
     return formattedData;
