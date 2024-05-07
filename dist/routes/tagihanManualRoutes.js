@@ -24,6 +24,15 @@ router.get('/petugas/:petugas_id/subwilayah/:subwilayah_id', (req, res) => __awa
         res.status(500).json({ message: error });
     }
 }));
+router.get('/petugas/:petugas_id/subwilayah/:subwilayah_id/paid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield (0, tagihanManualController_1.getPaidTagihanManual)(Number(req.params.petugas_id), Number(req.params.subwilayah_id));
+        res.status(200).json({ data: data });
+    }
+    catch (error) {
+        res.status(500).json({ message: error });
+    }
+}));
 router.post('/petugas/:petugas_id/subwilayah/:subwilayah_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, tagihanManualController_1.storeTagihanManual)(Number(req.params.petugas_id), Number(req.params.subwilayah_id), req.body);

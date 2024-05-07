@@ -119,6 +119,8 @@ export const getBillAmount = async (petugas_id: number, sub_wilayah_id: number) 
   }
 };
 
+// const getTransaksiPetugas = as
+
 const checkTransaksiExist = async (id: number) => {
   const transaksiPetugas = await prisma.transaksiPetugas.findUnique({
     where: {

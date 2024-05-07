@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeTagihanManual = exports.getTagihanManual = void 0;
+exports.storeTagihanManual = exports.getPaidTagihanManual = exports.getTagihanManual = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const getTagihanManual = (petugas_id, subwilayah_id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -59,6 +59,52 @@ const getTagihanManual = (petugas_id, subwilayah_id) => __awaiter(void 0, void 0
     }
 });
 exports.getTagihanManual = getTagihanManual;
+const getPaidTagihanManual = (petugas_id, subwilayah_id) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield prisma.tagihanManual.findMany({
+            where: {
+                petugas_id: petugas_id,
+                sub_wilayah_id: subwilayah_id,
+            },
+            select: {
+                id: true,
+                item_retribusi: {
+                    select: {
+                        kategori_nama: true,
+                    },
+                },
+                petugas: {
+                    select: {
+                        users: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                },
+                subwilayah: {
+                    select: {
+                        nama: true,
+                    },
+                },
+                total_harga: true,
+                detail_tagihan: true,
+                status: true,
+                paid_at: true,
+                created_at: true,
+            },
+            orderBy: {
+                created_at: 'desc',
+            },
+        });
+        return data;
+    }
+    catch (error) {
+        console.log(error);
+        throw error;
+    }
+});
+exports.getPaidTagihanManual = getPaidTagihanManual;
 const storeTagihanManual = (petugas_id, subwilayah_id, tagihan_manual) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield prisma.tagihanManual.create({

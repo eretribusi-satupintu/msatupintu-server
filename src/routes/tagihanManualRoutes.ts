@@ -1,12 +1,21 @@
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import { getTagihanManual, storeTagihanManual } from '../controllers/tagihanManualController';
+import { getPaidTagihanManual, getTagihanManual, storeTagihanManual } from '../controllers/tagihanManualController';
 
 const router = express.Router();
 
 router.get('/petugas/:petugas_id/subwilayah/:subwilayah_id', async (req: Request, res: Response) => {
   try {
     const data = await getTagihanManual(Number(req.params.petugas_id), Number(req.params.subwilayah_id));
+    res.status(200).json({ data: data });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+router.get('/petugas/:petugas_id/subwilayah/:subwilayah_id/paid', async (req: Request, res: Response) => {
+  try {
+    const data = await getPaidTagihanManual(Number(req.params.petugas_id), Number(req.params.subwilayah_id));
     res.status(200).json({ data: data });
   } catch (error) {
     res.status(500).json({ message: error });

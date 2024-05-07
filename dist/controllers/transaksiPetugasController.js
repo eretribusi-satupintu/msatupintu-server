@@ -119,6 +119,7 @@ const getBillAmount = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, 
     }
 });
 exports.getBillAmount = getBillAmount;
+// const getTransaksiPetugas = as
 const checkTransaksiExist = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const transaksiPetugas = yield prisma.transaksiPetugas.findUnique({
         where: {

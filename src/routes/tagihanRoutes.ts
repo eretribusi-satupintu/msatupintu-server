@@ -8,6 +8,7 @@ import {
   getTagihanWajibRetribusiMasyarakat,
   getTagihanWajibRetribusiMasyarakatProgress,
   getTagihan,
+  getAllPaidTagihanWajibRetribusi,
 } from '../controllers/tagihanController';
 import { StatusBayar } from '@prisma/client';
 
@@ -96,10 +97,21 @@ router.get('/petugas/:petugas_id/sub-wilayah/:subwilayah_id/status/:status', asy
     });
   }
 });
-
-router.get('/petugas/:petugas_id/sub-wilayah/:subwilayah_id', async (req: Request, res: Response) => {
+router.get('/petugas/:petugas_id/sub-wilayah/:subwilayah_id/all', async (req: Request, res: Response) => {
   try {
-    const data = await getTagihan(Number(req.params.petugas_id), Number(req.params.subwilayah_id));
+    const data = await getAllPaidTagihanWajibRetribusi(Number(req.params.petugas_id), Number(req.params.subwilayah_id));
+    res.status(200).json({ data: data });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      message: error,
+    });
+  }
+});
+
+router.get('/petugas/:petugas_id', async (req: Request, res: Response) => {
+  try {
+    const data = await getTagihan(Number(req.params.petugas_id));
     res.status(200).json({ data: data });
   } catch (error) {
     console.log(error);
