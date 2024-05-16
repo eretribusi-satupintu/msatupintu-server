@@ -13,8 +13,8 @@ import subWilayahRoutes from '../routes/subWilayahRoutes';
 import setoranRoutes from '../routes/setoranRoutes';
 import tagihanManualRoutes from '../routes/tagihanManualRoutes';
 import forgotPasswordRoutes from './updateForgotPasswordRoutes';
-
 import userRoutes from './userRoutes';
+
 const router = express.Router();
 router.get('/', async (req: Request, res: Response) => {
   res.send({ server: 'SatuPintu Server is runnning' });
