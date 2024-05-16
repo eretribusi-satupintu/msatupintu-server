@@ -31,7 +31,11 @@ const admin = __importStar(require("firebase-admin"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const app = admin.initializeApp({
-    credential: admin.credential.cert(require('./satupintu-otp-firebase-adminsdk-c9a8o-e058e28ec0.json')),
+    credential: admin.credential.cert({
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY,
+        projectId: process.env.FIREBASE_PROJECT_ID,
+    }),
     databaseURL: 'https://satupintu_app.firebaseio.com',
 });
 exports.app = app;
