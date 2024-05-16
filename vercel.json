@@ -11,6 +11,7 @@
     {
       "src": "/(.*)",
       "dest": "dist/server.js"
-    }
+    },
+    { "handle": "filesystem", "src": "/public", "dest": "dist/public" }
   ]
 }
