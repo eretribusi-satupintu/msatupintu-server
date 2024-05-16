@@ -33,7 +33,7 @@ export const storeSetoran = async (petugas_id: number, sub_wilayah_id: number, r
   try {
     const base64 = 'data:image/png;base64,' + req.bukti_penyetoran;
     const date_time = new Date(req.waktu_penyetoran).toISOString();
-    const pathToSaveImage = 'public/assets/' + date_time + '-image1.png';
+    const pathToSaveImage = 'public/assets/bukti-setoran/' + date_time + petugas_id + '-' + sub_wilayah_id + '-image.png';
     converBase64ToImage(base64, pathToSaveImage);
 
     const setoran = await prisma.setoran.create({
@@ -90,7 +90,7 @@ export const updateSetoran = async (setoran_id: number, petugas_id: number, sub_
     let pathToSaveImage = null;
     if (req.bukti_penyetoran !== '') {
       const base64 = 'data:image/png;base64,' + req.bukti_penyetoran;
-      pathToSaveImage = 'public/assets/' + date_time + '-image1.png';
+      pathToSaveImage = 'public/assets/bukti-setoran/' + date_time + petugas_id + '-' + sub_wilayah_id + '-image.png';
       converBase64ToImage(base64, pathToSaveImage);
     }
 

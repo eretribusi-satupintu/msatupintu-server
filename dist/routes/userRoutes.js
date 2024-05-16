@@ -35,4 +35,13 @@ router.put('/:user_id', (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).json({ message: error });
     }
 }));
+router.post('/update-password', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield (0, userController_1.updatePassword)(req.body.email, req.body.old_password, req.body.new_password, req.body.confirmation_password);
+        res.status(200).json({ data: data });
+    }
+    catch (error) {
+        res.status(500).json({ message: error });
+    }
+}));
 exports.default = router;

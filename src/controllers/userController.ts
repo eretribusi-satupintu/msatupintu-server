@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { IUpdateUser } from '../types';
 import { converBase64ToImage } from 'convert-base64-to-image';
+import { checkPassword, hashPassword } from '../utils/utils';
 
 const prisma = new PrismaClient();
 
@@ -33,7 +34,7 @@ export const getUser = async (email: string) => {
   }
 };
 
-export const updateUser = async (id: number, req: IUpdateUser) => {
+export const updateUser = async (user_id: number, req: IUpdateUser) => {
   try {
     var pathToSaveImage;
     if (req.photo_profile !== '') {
@@ -44,7 +45,7 @@ export const updateUser = async (id: number, req: IUpdateUser) => {
     }
     const user = await prisma.user.update({
       where: {
-        id: id,
+        id: user_id,
       },
       data: {
         email: req.email,
@@ -92,8 +93,93 @@ export const updateUser = async (id: number, req: IUpdateUser) => {
       message: "Can't idenified user role ",
     };
 
-    return user;
+    // return user;
   } catch (error) {
+    throw error;
+  }
+};
+
+export const updatePassword = async (email: string, old_password: string, new_password: string, confirmation_password: string) => {
+  try {
+    const current_password = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+      select: {
+        password: true,
+      },
+    });
+
+    if ((await checkPassword(old_password, current_password!.password)) == false) {
+      throw 'Password lama anda tidak sesuai';
+    }
+
+    if (new_password != confirmation_password) {
+      throw 'Password yang anda masukkan tidak sesuai';
+    } else {
+      const hashedPassword: string = await hashPassword(new_password);
+
+      const updatePassword = prisma.user.update({
+        where: {
+          email: email,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+      return updatePassword;
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const checkPhoneNumberIfExist = async (phone_number: string) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        phone_number: '0' + phone_number,
+      },
+    });
+
+    // return user;
+
+    if (user == null) {
+      return {
+        is_exist: false,
+      };
+    }
+
+    return {
+      is_exist: true,
+    };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const updateForgotPassword = async (phone_number: string, new_password: string, confirmation_password: string) => {
+  try {
+    if (new_password != confirmation_password) {
+      console.log(new_password + ' ' + confirmation_password);
+      throw 'Password yang anda masukkan tidak sesuai';
+    } else {
+      const hashedPassword: string = await hashPassword(new_password);
+
+      const updatePassword = prisma.user.update({
+        where: {
+          phone_number: '0' + phone_number,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+      return updatePassword;
+    }
+  } catch (error) {
+    console.log(error);
     throw error;
   }
 };

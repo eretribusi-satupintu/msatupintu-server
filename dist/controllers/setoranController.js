@@ -42,7 +42,7 @@ const storeSetoran = (petugas_id, sub_wilayah_id, req) => __awaiter(void 0, void
     try {
         const base64 = 'data:image/png;base64,' + req.bukti_penyetoran;
         const date_time = new Date(req.waktu_penyetoran).toISOString();
-        const pathToSaveImage = 'public/assets/' + date_time + '-image1.png';
+        const pathToSaveImage = 'public/assets/bukti-setoran/' + date_time + petugas_id + '-' + sub_wilayah_id + '-image.png';
         (0, convert_base64_to_image_1.converBase64ToImage)(base64, pathToSaveImage);
         const setoran = yield prisma.setoran.create({
             data: {
@@ -95,7 +95,7 @@ const updateSetoran = (setoran_id, petugas_id, sub_wilayah_id, req) => __awaiter
         let pathToSaveImage = null;
         if (req.bukti_penyetoran !== '') {
             const base64 = 'data:image/png;base64,' + req.bukti_penyetoran;
-            pathToSaveImage = 'public/assets/' + date_time + '-image1.png';
+            pathToSaveImage = 'public/assets/bukti-setoran/' + date_time + petugas_id + '-' + sub_wilayah_id + '-image.png';
             (0, convert_base64_to_image_1.converBase64ToImage)(base64, pathToSaveImage);
         }
         const findSetoran = yield prisma.setoran.findUnique({

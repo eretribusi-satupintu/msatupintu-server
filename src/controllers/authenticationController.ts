@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 import { User } from '../types';
-import { hashPassword, checkPassword } from '../utils/utils';
+import { checkPassword } from '../utils/utils';
 
 const prisma = new PrismaClient();
 

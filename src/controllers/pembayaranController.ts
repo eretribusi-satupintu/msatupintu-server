@@ -24,12 +24,10 @@ export const get = async (status: Status) => {
             },
           },
         },
-        virtual_account: {
+        VirtualAccount: {
           where: {
             status: 'SUCCESS',
           },
-          take: 1,
-          orderBy: { created_at: 'desc' },
         },
       },
     });

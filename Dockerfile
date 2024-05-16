@@ -12,7 +12,7 @@ RUN npm install && npm cache clean --force
 
 COPY tsconfig.json ./           
 
-# COPY src ./src
+COPY src ./src
 
 # COPY public ./public
 

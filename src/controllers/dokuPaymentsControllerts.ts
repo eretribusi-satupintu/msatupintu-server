@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
+
 import axios from 'axios';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
 import { ICheckoutQrisRequest, IVirtualAccountResponse, IVirtualAccountnumberRequest } from '../types';
+import { sendNotification } from '../utils/firebase_messaging';
 const prisma = new PrismaClient();
 dotenv.config();
 
@@ -87,42 +89,13 @@ const generateXSignature = (secretKey: string, stringToSign: string) => {
   return signature;
 };
 
-// const getToken = async () => {
-//   try {
-//     const apiUrl = process.env.DOKU_VA_BASE_URL;
-//     const clientId = process.env.DOKU_CLIENT_ID;
-//     const secretKey = process.env.DOKU_SECRET_KEY;
-//     const signature = generateXSignature(secretKey!, `${clientId}|${formattedWibTimestamp}`);
-//     const requestTarget = '/authorization/v1/access-token/b2b';
-//     const body = {
-//       grantType: 'BRN-0251-1709171991384',
-//       additionalInfo: '',
-//     };
-
-//     const headers = {
-//       'X-SIGNATURE': signature,
-//       'X-TIMESTAMP': formattedWibTimestamp,
-//       'X-CLIENT-KEY': process.env.DOKU_SECRET_KEY,
-//     };
-//     const data = await axios.post(apiUrl! + requestTarget, body, { headers });
-
-//     if (data.status != 200) {
-//       throw data;
-//     }
-//     return data.data;
-//   } catch (error) {
-//     console.log({ error: error });
-
-//     throw (error as any).response;
-//   }
-// };
-
 const getVirtualAccount = async (
   request_id: string,
   tagihan_id: number,
   request_timestamp: string,
   req: IVirtualAccountnumberRequest,
   bank: string,
+  fcm_token: string,
 ) => {
   try {
     const apiUrl = process.env.DOKU_VA_BASE_URL;
@@ -153,45 +126,42 @@ const getVirtualAccount = async (
         tagihan_id: tagihan_id,
         metode_pembayaran: 'VA',
         status: 'WAITING',
-        virtual_account: {
-          create: [
-            {
-              tagihan_invoice: data.data.order.invoice_number,
-              virtual_account_number: data.data.virtual_account_info.virtual_account_number,
-              how_to_pay_page: data.data.virtual_account_info.how_to_pay_page,
-              how_to_pay_api: data.data.virtual_account_info.how_to_pay_api,
-              bank: bank,
-              created_date: formatResponseToISO8601(data.data.virtual_account_info.created_date),
-              expired_date: formatResponseToISO8601(data.data.virtual_account_info.expired_date),
-              created_date_utc: data.data.virtual_account_info.created_date_utc,
-              expired_date_utc: data.data.virtual_account_info.expired_date_utc,
-              status: 'WAITING',
-            },
-          ],
+        fcm_token: fcm_token,
+        VirtualAccount: {
+          create: {
+            tagihan_invoice: data.data.order.invoice_number,
+            virtual_account_number: data.data.virtual_account_info.virtual_account_number,
+            how_to_pay_page: data.data.virtual_account_info.how_to_pay_page,
+            how_to_pay_api: data.data.virtual_account_info.how_to_pay_api,
+            bank: bank,
+            created_date: formatResponseToISO8601(data.data.virtual_account_info.created_date),
+            expired_date: formatResponseToISO8601(data.data.virtual_account_info.expired_date),
+            created_date_utc: data.data.virtual_account_info.created_date_utc,
+            expired_date_utc: data.data.virtual_account_info.expired_date_utc,
+            status: 'WAITING',
+          },
         },
       },
       include: {
         tagihan: true,
-        virtual_account: {
-          take: 1,
-        },
+        VirtualAccount: true,
       },
     });
 
     const response = {
       tagihan_id: tagihan_id,
-      bank: storeData.virtual_account[0].bank,
-      virtual_account_number: storeData.virtual_account[0].virtual_account_number,
-      created_date: storeData.virtual_account[0].created_date,
-      expired_date: storeData.virtual_account[0].expired_date,
+      bank: storeData.VirtualAccount!.bank,
+      virtual_account_number: storeData.VirtualAccount!.virtual_account_number,
+      created_date: storeData.VirtualAccount!.created_date,
+      expired_date: storeData.VirtualAccount!.expired_date,
       harga: storeData.tagihan.total_harga,
-      how_to_pay_page: storeData.virtual_account[0].how_to_pay_page,
-      how_to_pay_api: storeData.virtual_account[0].how_to_pay_api,
+      how_to_pay_page: storeData.VirtualAccount!.how_to_pay_page,
+      how_to_pay_api: storeData.VirtualAccount!.how_to_pay_api,
     };
 
     return response;
   } catch (error) {
-    console.log({ error: (error as any).response });
+    console.log({ error: (error as any).response.message });
 
     throw (error as any).response.data.error.message;
   }
@@ -244,23 +214,7 @@ const getQrisCheckoutPage = async (request_id: string, tagihan_id: number, reque
 
 const paymentNotification = async (req: any) => {
   try {
-    // const notificationHeader = req.headers;
-    // const notificationBody = req.body;
-    // const notificationPath = '/api/payments/notifications';
-    // const dokuKey = process.env.DOKU_SECRET_KEY;
-
-    // const finalDigest = generateDigest(JSON.stringify(notificationBody));
-
-    // const finalSignature = generateSignature(
-    //   notificationHeader['client-id'],
-    //   notificationHeader['request-id'],
-    //   notificationHeader['request-timestamp'],
-    //   notificationPath,
-    //   finalDigest,
-    //   dokuKey,
-    // );
-
-    const vaData = await prisma.virtualAccount.updateMany({
+    const vaData = await prisma.virtualAccount.update({
       where: {
         virtual_account_number: req.body.virtual_account_info.virtual_account_number,
       },
@@ -279,16 +233,16 @@ const paymentNotification = async (req: any) => {
       },
     });
 
-    const pembayaran = await prisma.pembayaran.updateMany({
+    const pembayaran = await prisma.pembayaran.update({
       where: {
-        tagihan_id: tagihan.id,
+        id: vaData.pembayaran_id,
       },
       data: {
         status: 'SUCCESS',
       },
     });
 
-    const deleteVa = await prisma.virtualAccount.deleteMany({
+    await prisma.virtualAccount.deleteMany({
       where: {
         pembayaran: {
           tagihan_id: req.tagihan_id,
@@ -298,6 +252,8 @@ const paymentNotification = async (req: any) => {
         },
       },
     });
+
+    await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, pembayaran.fcm_token);
 
     return { status: 'OK', data: tagihan.id };
   } catch (error) {

@@ -12,26 +12,26 @@ model Roles {
   name       String
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
-  user       User[]
+  User       User[]
 
   @@map("roles")
 }
 
 model User {
   id              Int             @id @default(autoincrement())
-  role_id         Int
   name            String
   email           String          @unique
   password        String
-  nik             String?         @unique
-  phone_number    String
-  photo_profile   String?
-  alamat          String
-  roles           Roles?          @relation(fields: [role_id], references: [id])
-  petugas         Petugas?
-  wajib_retribusi WajibRetribusi?
   created_at      DateTime        @default(now())
   updated_at      DateTime        @default(now()) @updatedAt
+  role_id         Int
+  phone_number    String          @unique
+  photo_profile   String?
+  nik             String?         @unique
+  alamat          String
+  petugas         Petugas?
+  wajib_retribusi WajibRetribusi?
+  roles           Roles           @relation(fields: [role_id], references: [id])
 
   @@map("users")
 }
@@ -39,13 +39,13 @@ model User {
 model Petugas {
   id                Int                 @id @default(autoincrement())
   user_id           Int                 @unique
-  users             User                @relation(fields: [user_id], references: [id])
   created_at        DateTime            @default(now())
   updated_at        DateTime            @default(now()) @updatedAt
+  users             User                @relation(fields: [user_id], references: [id])
   PetugasSubWilayah PetugasSubWilayah[]
-  TransaksiPetugas  TransaksiPetugas[]
   Setoran           Setoran[]
   TagihanManual     TagihanManual[]
+  TransaksiPetugas  TransaksiPetugas[]
 
   @@map("petugas")
 }
@@ -53,12 +53,13 @@ model Petugas {
 model PetugasSubWilayah {
   petugas_id     Int
   sub_wilayah_id Int
-  petugas        Petugas    @relation(fields: [petugas_id], references: [id])
-  sub_wilayah    SubWilayah @relation(fields: [sub_wilayah_id], references: [id])
   created_at     DateTime   @default(now())
   updated_at     DateTime   @default(now()) @updatedAt
+  petugas        Petugas    @relation(fields: [petugas_id], references: [id])
+  sub_wilayah    SubWilayah @relation(fields: [sub_wilayah_id], references: [id])
 
   @@id([petugas_id, sub_wilayah_id])
+  @@index([sub_wilayah_id], map: "petugas_sub_wilayah_sub_wilayah_id_fkey")
   @@map("petugas_sub_wilayah")
 }
 
@@ -66,26 +67,28 @@ model TransaksiPetugas {
   id         Int                    @id @default(autoincrement())
   tagihan_id Int                    @unique
   petugas_id Int
-  setoran_id Int?
-  tagihan    Tagihan                @relation(fields: [tagihan_id], references: [id])
-  petugas    Petugas                @relation(fields: [petugas_id], references: [id])
-  setoran    Setoran?               @relation(fields: [setoran_id], references: [id])
   nominal    Float
-  status     TransaksiPetugasStatus @default(SUCCESS)
-  is_stored  Boolean                @default(false)
   created_at DateTime               @default(now())
   updated_at DateTime               @default(now()) @updatedAt
+  is_stored  Boolean                @default(false)
+  setoran_id Int?
+  status     TransaksiPetugasStatus @default(SUCCESS)
+  petugas    Petugas                @relation(fields: [petugas_id], references: [id])
+  setoran    Setoran?               @relation(fields: [setoran_id], references: [id])
+  tagihan    Tagihan                @relation(fields: [tagihan_id], references: [id])
 
+  @@index([petugas_id], map: "transaksi_petugas_petugas_id_fkey")
+  @@index([setoran_id], map: "transaksi_petugas_setoran_id_fkey")
   @@map("transaksi_petugas")
 }
 
 model WajibRetribusi {
   id         Int       @id @default(autoincrement())
   user_id    Int       @unique
-  kontrak    Kontrak[]
-  users      User      @relation(fields: [user_id], references: [id])
   created_at DateTime  @default(now())
   updated_at DateTime  @default(now()) @updatedAt
+  kontrak    Kontrak[]
+  users      User      @relation(fields: [user_id], references: [id])
 
   @@map("wajib_retribusi")
 }
@@ -93,9 +96,9 @@ model WajibRetribusi {
 model Kabupaten {
   id         Int         @id @default(autoincrement())
   nama       String
-  kedinasan  Kedinasan[]
   created_at DateTime    @default(now())
   updated_at DateTime    @default(now()) @updatedAt
+  kedinasan  Kedinasan[]
 
   @@map("kabupaten")
 }
@@ -104,10 +107,10 @@ model Kedinasan {
   id           Int         @id @default(autoincrement())
   kabupaten_id Int
   nama         String
-  kabupaten    Kabupaten   @relation(fields: [kabupaten_id], references: [id])
-  retribusi    Retribusi[]
   created_at   DateTime    @default(now())
   updated_at   DateTime    @default(now()) @updatedAt
+  kabupaten    Kabupaten   @relation(fields: [kabupaten_id], references: [id])
+  retribusi    Retribusi[]
 
   @@index([kabupaten_id], map: "kedinasan_kabupaten_id_fkey")
   @@map("kedinasan")
@@ -115,16 +118,17 @@ model Kedinasan {
 
 model SubWilayah {
   id                Int                 @id @default(autoincrement())
-  retribusi_id      Int                 @default(1)
   nama              String
-  kontrak           Kontrak[]
-  retribusi         Retribusi           @relation(fields: [retribusi_id], references: [id])
   created_at        DateTime            @default(now())
   updated_at        DateTime            @default(now()) @updatedAt
+  retribusi_id      Int                 @default(1)
+  kontrak           Kontrak[]
   PetugasSubWilayah PetugasSubWilayah[]
   Setoran           Setoran[]
+  retribusi         Retribusi           @relation(fields: [retribusi_id], references: [id])
   TagihanManual     TagihanManual[]
 
+  @@index([retribusi_id], map: "sub_wilayah_retribusi_id_fkey")
   @@map("sub_wilayah")
 }
 
@@ -132,10 +136,10 @@ model Retribusi {
   id             Int             @id @default(autoincrement())
   kedinasan_id   Int
   nama           String
-  item_retribusi ItemRetribusi[]
-  kedinasan      Kedinasan       @relation(fields: [kedinasan_id], references: [id])
   created_at     DateTime        @default(now())
   updated_at     DateTime        @default(now()) @updatedAt
+  item_retribusi ItemRetribusi[]
+  kedinasan      Kedinasan       @relation(fields: [kedinasan_id], references: [id])
   SubWilayah     SubWilayah[]
 
   @@index([kedinasan_id], map: "retribusi_kedinasan_id_fkey")
@@ -148,10 +152,10 @@ model ItemRetribusi {
   kategori_nama String
   jenis_tagihan Jenistagihan
   harga         Float
-  retribusi     Retribusi       @relation(fields: [retribusi_id], references: [id])
-  kontrak       Kontrak[]
   created_at    DateTime        @default(now())
   updated_at    DateTime        @default(now()) @updatedAt
+  retribusi     Retribusi       @relation(fields: [retribusi_id], references: [id])
+  kontrak       Kontrak[]
   TagihanManual TagihanManual[]
 
   @@index([retribusi_id], map: "item_retribusi_retribusi_id_fkey")
@@ -163,15 +167,15 @@ model Kontrak {
   wajib_retribusi_id Int
   item_retribusi_id  Int
   sub_wilayah_id     Int
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @default(now()) @updatedAt
   status             StatusKontrak  @default(DIPROSES)
+  tanggal_mulai      DateTime
+  tanggal_selesai    DateTime
   item_retribusi     ItemRetribusi  @relation(fields: [item_retribusi_id], references: [id])
   sub_wilayah        SubWilayah     @relation(fields: [sub_wilayah_id], references: [id])
   wajib_retribusi    WajibRetribusi @relation(fields: [wajib_retribusi_id], references: [id])
   tagihan            Tagihan[]
-  tanggal_mulai      DateTime
-  tanggal_selesai    DateTime
-  created_at         DateTime       @default(now())
-  updated_at         DateTime       @default(now()) @updatedAt
 
   @@index([item_retribusi_id], map: "kontrak_item_retribusi_id_fkey")
   @@index([sub_wilayah_id], map: "kontrak_sub_wilayah_id_fkey")
@@ -187,15 +191,15 @@ model Tagihan {
   status           StatusBayar       @default(NEW)
   invoice_id       String            @unique
   request_id       String            @unique
-  active           Boolean           @default(false)
-  Pembayaran       Pembayaran[]
-  kontrak          Kontrak           @relation(fields: [kontrak_id], references: [id])
-  jatuh_tempo      DateTime          @default(now())
-  payment_time     DateTime?
   created_at       DateTime          @default(now())
   updated_at       DateTime          @default(now()) @updatedAt
-  TransaksiPetugas TransaksiPetugas?
+  jatuh_tempo      DateTime          @default(now())
+  payment_time     DateTime?
+  active           Boolean           @default(false)
   CheckoutPayment  CheckoutPayment[]
+  Pembayaran       Pembayaran[]
+  kontrak          Kontrak           @relation(fields: [kontrak_id], references: [id])
+  TransaksiPetugas TransaksiPetugas?
 
   @@index([kontrak_id], map: "tagihan_kontrak_id_fkey")
   @@map("tagihan")
@@ -204,21 +208,25 @@ model Tagihan {
 model TagihanManual {
   id                Int                 @id @default(autoincrement())
   item_retribusi_id Int
-  petugas_id        Int
-  sub_wilayah_id    Int
-  setoran_id        Int?
   detail_tagihan    String
   total_harga       Int
   status            StatusTagihanManual
-  item_retribusi    ItemRetribusi       @relation(fields: [item_retribusi_id], references: [id])
   paid_at           DateTime?
   created_at        DateTime            @default(now())
   updated_at        DateTime            @default(now()) @updatedAt
+  petugas_id        Int
+  sub_wilayah_id    Int
   is_stored         Boolean             @default(false)
+  setoran_id        Int?
+  item_retribusi    ItemRetribusi       @relation(fields: [item_retribusi_id], references: [id])
   petugas           Petugas             @relation(fields: [petugas_id], references: [id])
-  subwilayah        SubWilayah          @relation(fields: [sub_wilayah_id], references: [id])
   setoran           Setoran?            @relation(fields: [setoran_id], references: [id])
+  subwilayah        SubWilayah          @relation(fields: [sub_wilayah_id], references: [id])
 
+  @@index([item_retribusi_id], map: "tagihan_manual_item_retribusi_id_fkey")
+  @@index([petugas_id], map: "tagihan_manual_petugas_id_fkey")
+  @@index([setoran_id], map: "tagihan_manual_setoran_id_fkey")
+  @@index([sub_wilayah_id], map: "tagihan_manual_sub_wilayah_id_fkey")
   @@map("tagihan_manual")
 }
 
@@ -227,10 +235,11 @@ model Pembayaran {
   tagihan_id        Int
   metode_pembayaran MetodePembayaran
   status            Status
-  tagihan           Tagihan          @relation(fields: [tagihan_id], references: [id])
-  virtual_account   VirtualAccount[]
   created_at        DateTime         @default(now())
   updated_at        DateTime         @default(now()) @updatedAt
+  fcm_token         String
+  tagihan           Tagihan          @relation(fields: [tagihan_id], references: [id])
+  VirtualAccount    VirtualAccount?
 
   @@index([tagihan_id], map: "Pembayaran_tagihan_id_fkey")
   @@map("pembayaran")
@@ -241,37 +250,39 @@ model Setoran {
   petugas_id        Int
   sub_wilayah_id    Int
   waktu_penyetoran  DateTime
-  total             Int
   lokasi_penyetoran LokasiSetoran
   bukti_penyetoran  String
-  keterangan        String?
   status            StatusSetoran
-  petugas           Petugas            @relation(fields: [petugas_id], references: [id])
-  subwilayah        SubWilayah         @relation(fields: [sub_wilayah_id], references: [id])
   created_at        DateTime           @default(now())
   updated_at        DateTime           @default(now()) @updatedAt
-  TransaksiPetugas  TransaksiPetugas[]
+  total             Int
+  keterangan        String?
+  petugas           Petugas            @relation(fields: [petugas_id], references: [id])
+  subwilayah        SubWilayah         @relation(fields: [sub_wilayah_id], references: [id])
   TagihanManual     TagihanManual[]
+  TransaksiPetugas  TransaksiPetugas[]
 
+  @@index([petugas_id], map: "setoran_petugas_id_fkey")
+  @@index([sub_wilayah_id], map: "setoran_sub_wilayah_id_fkey")
   @@map("setoran")
 }
 
 model VirtualAccount {
   id                     Int        @id @default(autoincrement())
-  virtual_account_number String
+  virtual_account_number String     @unique
   created_date           DateTime
   created_date_utc       DateTime
   expired_date           DateTime
   expired_date_utc       DateTime
   how_to_pay_api         String
   how_to_pay_page        String
-  tagihan_invoice        String
-  bank                   String
   status                 String
-  pembayaran_id          Int
-  pembayaran             Pembayaran @relation(fields: [pembayaran_id], references: [id])
+  pembayaran_id          Int        @unique
+  bank                   String
   created_at             DateTime   @default(now())
+  tagihan_invoice        String
   updated_at             DateTime   @default(now()) @updatedAt
+  pembayaran             Pembayaran @relation(fields: [pembayaran_id], references: [id])
 
   @@index([pembayaran_id], map: "virtual_accounts_pembayaran_id_fkey")
   @@map("virtual_accounts")
@@ -285,11 +296,12 @@ model CheckoutPayment {
   url                  String
   expired_date         String
   uuid                 String
-  token_id             String
-  tagihan              Tagihan  @relation(fields: [tagihan_id], references: [id])
   created_at           DateTime @default(now())
   updated_at           DateTime @default(now()) @updatedAt
+  token_id             String
+  tagihan              Tagihan  @relation(fields: [tagihan_id], references: [id])
 
+  @@index([tagihan_id], map: "checkout_payments_tagihan_id_fkey")
   @@map("checkout_payments")
 }
 

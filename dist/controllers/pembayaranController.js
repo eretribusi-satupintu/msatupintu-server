@@ -34,12 +34,10 @@ const get = (status) => __awaiter(void 0, void 0, void 0, function* () {
                         },
                     },
                 },
-                virtual_account: {
+                VirtualAccount: {
                     where: {
                         status: 'SUCCESS',
                     },
-                    take: 1,
-                    orderBy: { created_at: 'desc' },
                 },
             },
         });

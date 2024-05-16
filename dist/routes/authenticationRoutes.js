@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const authenticationController_1 = require("../controllers/authenticationController");
+const firebase_messaging_1 = require("../utils/firebase_messaging");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 // router.post('/register', async (req: Request, res: Response) => {
@@ -42,6 +43,14 @@ router.post('/logout', (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         const data = yield (0, authenticationController_1.logout)();
         res.status(200).json(data);
+    }
+    catch (error) {
+        res.status(403).json(error);
+    }
+}));
+router.post('/notification', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield (0, firebase_messaging_1.sendNotification)('Pembayaran berhasil', 'Pembayaran untuk tagihan tagihan 1 telah berhasil dilakukan', req.body.token);
     }
     catch (error) {
         res.status(403).json(error);

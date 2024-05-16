@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import { login as loginController, logout } from '../controllers/authenticationController';
 import authValidation from '../middleware/authValidationMiddleware';
+import { sendNotification } from '../utils/firebase_messaging';
 const router = express.Router();
 
 router.use(bodyParser.json());
@@ -33,6 +34,14 @@ router.post('/logout', async (req: Request, res: Response) => {
   try {
     const data = await logout();
     res.status(200).json(data);
+  } catch (error) {
+    res.status(403).json(error);
+  }
+});
+
+router.post('/notification', async (req: Request, res: Response) => {
+  try {
+    await sendNotification('Pembayaran berhasil', 'Pembayaran untuk tagihan tagihan 1 telah berhasil dilakukan', req.body.token);
   } catch (error) {
     res.status(403).json(error);
   }
