@@ -11,6 +11,10 @@
     {
       "src": "/(.*)",
       "dest": "dist/server.js"
+    },
+    {
+      "src": "/public",
+      "dest": "dist/public"
     }
   ]
 }
