@@ -6,7 +6,7 @@ export const sendNotification = async (title: string, body: string, token: strin
     notification: {
       title: title,
       body: body,
-      // imageUrl
+      imageUrl: '../../public/assets/images/img_logo.png',
     },
 
     token: token,

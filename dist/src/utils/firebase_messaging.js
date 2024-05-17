@@ -16,7 +16,7 @@ const sendNotification = (title, body, token) => __awaiter(void 0, void 0, void 
         notification: {
             title: title,
             body: body,
-            // imageUrl
+            imageUrl: '../../public/assets/images/img_logo.png',
         },
         token: token,
     };
