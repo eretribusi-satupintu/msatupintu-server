@@ -3,18 +3,24 @@
   "builds": [
     {
       "src": "dist/src/server.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": { "includeFiles": ["dist/**"] }
     }
   ],
   "routes": [
     {
       "src": "/public/(.*)",
-      "dest": "/public/$1"
+      "dest": "public/$1"
     },
     {
       "src": "/(.*)",
       "dest": "dist/src/server.js"
     }
   ],
-  "public": true
+  "public": [
+    {
+      "src": "/public/(.*)",
+      "dest": "public/(.*)"
+    }
+  ]
 }
