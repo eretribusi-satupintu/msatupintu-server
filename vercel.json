@@ -17,10 +17,5 @@
       "dest": "dist/src/server.js"
     }
   ],
-  "public": [
-    {
-      "src": "/public/(.*)",
-      "dest": "public/(.*)"
-    }
-  ]
+  "public": true
 }
