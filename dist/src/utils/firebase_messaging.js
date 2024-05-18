@@ -8,20 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendNotification = void 0;
 const firebaseConfig_1 = require("../config/firebaseConfig");
-const path_1 = __importDefault(require("path"));
 const sendNotification = (title, body, token) => __awaiter(void 0, void 0, void 0, function* () {
-    const imagePath = path_1.default.resolve(__dirname, '../../public/assets/images/img_logo.png');
     const message = {
         notification: {
             title: title,
             body: body,
-            imageUrl: imagePath,
+        },
+        android: {
+            priority: 'high',
+        },
+        webpush: {
+            notification: {},
         },
         token: token,
     };
@@ -30,9 +30,11 @@ const sendNotification = (title, body, token) => __awaiter(void 0, void 0, void 
         .send(message)
         .then((response) => {
         console.log('Successfully sent message:', response);
+        return response;
     })
         .catch((error) => {
         console.log('Error sending message:', error);
+        return error;
     });
 });
 exports.sendNotification = sendNotification;

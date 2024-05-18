@@ -51,6 +51,7 @@ router.post('/logout', (req, res) => __awaiter(void 0, void 0, void 0, function*
 router.post('/notification', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, firebase_messaging_1.sendNotification)('Pembayaran berhasil', 'Pembayaran untuk tagihan tagihan 1 telah berhasil dilakukan', req.body.token);
+        return 'success';
     }
     catch (error) {
         res.status(403).json(error);
