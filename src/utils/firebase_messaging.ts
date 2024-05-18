@@ -11,9 +11,6 @@ export const sendNotification = async (title: string, body: string, token: strin
       priority: 'high',
     },
 
-    webpush: {
-      notification: {},
-    },
     token: token,
   };
   console.log(message);

@@ -20,9 +20,6 @@ const sendNotification = (title, body, token) => __awaiter(void 0, void 0, void 
         android: {
             priority: 'high',
         },
-        webpush: {
-            notification: {},
-        },
         token: token,
     };
     console.log(message);
