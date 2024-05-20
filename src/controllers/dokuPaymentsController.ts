@@ -212,92 +212,42 @@ const getQrisCheckoutPage = async (request_id: string, tagihan_id: number, reque
   }
 };
 
-// const paymentNotification = async (req: any) => {
-//   try {
-//     const vaData = await prisma.virtualAccount.update({
-//       where: {
-//         virtual_account_number: req.body.virtual_account_info.virtual_account_number,
-//       },
-//       data: {
-//         status: req.body.transaction.status,
-//       },
-//     });
-
-//     const tagihan = await prisma.tagihan.update({
-//       where: {
-//         invoice_id: req.body.order.invoice_number,
-//       },
-//       data: {
-//         status: 'VERIFIED',
-//         payment_time: req.body.transaction.date,
-//       },
-//     });
-
-//     const pembayaran = await prisma.pembayaran.update({
-//       where: {
-//         id: vaData.pembayaran_id,
-//       },
-//       data: {
-//         status: 'SUCCESS',
-//       },
-//     });
-
-//     await prisma.virtualAccount.deleteMany({
-//       where: {
-//         pembayaran: {
-//           tagihan_id: req.tagihan_id,
-//         },
-//         NOT: {
-//           status: 'SUCCESS',
-//         },
-//       },
-//     });
-
-//     await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, pembayaran.fcm_token);
-
-//     return { status: 'OK', data: tagihan.id };
-//   } catch (error) {
-//     console.log({ error: error });
-//     throw (error as any).response.data.error.message;
-//   }
-// };
-
 const paymentNotification = async (req: any) => {
   try {
-    const { virtual_account_info, transaction, order } = req.body;
-
-    // Perform database updates in parallel
-    const [vaData, tagihan] = await Promise.all([
-      prisma.virtualAccount.update({
-        where: {
-          virtual_account_number: virtual_account_info.virtual_account_number,
-        },
-        data: {
-          status: transaction.status,
-        },
-      }),
-      prisma.tagihan.update({
-        where: {
-          invoice_id: order.invoice_number,
-        },
-        data: {
-          status: 'VERIFIED',
-          payment_time: transaction.date,
-        },
-      }),
-    ]);
-
-    const pembayaran = await prisma.pembayaran.update({
+    const vaData = await prisma.virtualAccount.update({
       where: {
-        id: vaData.pembayaran_id,
+        virtual_account_number: req.body.virtual_account_info.virtual_account_number,
       },
       data: {
-        status: 'SUCCESS',
+        status: req.body.transaction.status,
+        pembayaran: {
+          update: {
+            status: 'SUCCESS',
+          },
+        },
+      },
+      select: {
+        pembayaran: {
+          select: {
+            fcm_token: true,
+          },
+        },
       },
     });
 
-    // Delete outdated virtual accounts asynchronously
-    const deleteVirtualAccounts = prisma.virtualAccount.deleteMany({
+    const tagihan = await prisma.tagihan.update({
+      where: {
+        invoice_id: req.body.order.invoice_number,
+      },
+      data: {
+        status: 'VERIFIED',
+        payment_time: req.body.transaction.date,
+      },
+    });
+
+    await deleteUnPaidVA(req.tagihan_id);
+
+    await prisma.virtualAccount.deleteMany({
       where: {
         pembayaran: {
           tagihan_id: req.tagihan_id,
@@ -308,22 +258,95 @@ const paymentNotification = async (req: any) => {
       },
     });
 
-    // Send notification asynchronously
-    const sendNotificationPromise = sendNotification(
-      'Pembayaran berhasil',
-      `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`,
-      pembayaran.fcm_token,
-    );
-
-    // Wait for both async tasks to complete
-    await Promise.all([deleteVirtualAccounts, sendNotificationPromise]);
+    await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
 
     return { status: 'OK', data: tagihan.id };
   } catch (error) {
     console.log({ error: error });
-    throw (error as any).response?.data?.error?.message || 'An error occurred';
+    throw (error as any).response.data.error.message;
   }
 };
+
+const deleteUnPaidVA = async (tagihan_id: number) => {
+  try {
+    await prisma.virtualAccount.deleteMany({
+      where: {
+        pembayaran: {
+          tagihan_id: tagihan_id,
+        },
+        NOT: {
+          status: 'SUCCESS',
+        },
+      },
+    });
+  } catch (error) {
+    console.log({ error: error });
+    throw (error as any).response.data.error.message;
+  }
+};
+
+// const paymentNotification = async (req: any) => {
+//   try {
+//     const { virtual_account_info, transaction, order } = req.body;
+
+//     // Perform database updates in parallel
+//     const [vaData, tagihan] = await Promise.all([
+//       prisma.virtualAccount.update({
+//         where: {
+//           virtual_account_number: virtual_account_info.virtual_account_number,
+//         },
+//         data: {
+//           status: transaction.status,
+//         },
+//       }),
+//       prisma.tagihan.update({
+//         where: {
+//           invoice_id: order.invoice_number,
+//         },
+//         data: {
+//           status: 'VERIFIED',
+//           payment_time: transaction.date,
+//         },
+//       }),
+//     ]);
+
+//     const pembayaran = await prisma.pembayaran.update({
+//       where: {
+//         id: vaData.pembayaran_id,
+//       },
+//       data: {
+//         status: 'SUCCESS',
+//       },
+//     });
+
+//     // Delete outdated virtual accounts asynchronously
+//     const deleteVirtualAccounts = await prisma.virtualAccount.deleteMany({
+//       where: {
+//         pembayaran: {
+//           tagihan_id: req.tagihan_id,
+//         },
+//         NOT: {
+//           status: 'SUCCESS',
+//         },
+//       },
+//     });
+
+//     // Send notification asynchronously
+//     const sendNotificationPromise = sendNotification(
+//       'Pembayaran berhasil',
+//       `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`,
+//       pembayaran.fcm_token,
+//     );
+
+//     // Wait for both async tasks to complete
+//     await Promise.all([deleteVirtualAccounts, sendNotificationPromise]);
+
+//     return { status: 'OK', data: tagihan.id };
+//   } catch (error) {
+//     console.log({ error: error });
+//     throw (error as any).response?.data?.error?.message || 'An error occurred';
+//   }
+// };
 
 const getAllVirtualAccountPayments = async (wr_id: number, status: string) => {
   try {
