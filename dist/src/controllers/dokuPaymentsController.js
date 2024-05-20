@@ -286,7 +286,8 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
     }
     catch (error) {
         console.log({ error: error });
-        throw ((_c = (_b = (_a = error.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.error) === null || _c === void 0 ? void 0 : _c.message) || 'An error occurred';
+          throw error;
+        // throw ((_c = (_b = (_a = error.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.error) === null || _c === void 0 ? void 0 : _c.message) || 'An error occurred';
     }
 });
 exports.paymentNotification = paymentNotification;
