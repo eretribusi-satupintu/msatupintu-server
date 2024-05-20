@@ -71,6 +71,7 @@ router.post('/qris-checkout', (req, res) => __awaiter(void 0, void 0, void 0, fu
 }));
 router.post('/notifications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        return 'test';
         const data = yield (0, dokuPaymentsControllerts_1.paymentNotification)(req);
         res.status(200).json({ data: data });
     }

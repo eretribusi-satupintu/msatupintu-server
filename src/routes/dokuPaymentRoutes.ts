@@ -67,6 +67,7 @@ router.post('/qris-checkout', async (req: Request, res: Response) => {
 
 router.post('/notifications', async (req: Request, res: Response) => {
   try {
+    return 'test';
     const data = await paymentNotification(req);
     res.status(200).json({ data: data });
   } catch (err) {
