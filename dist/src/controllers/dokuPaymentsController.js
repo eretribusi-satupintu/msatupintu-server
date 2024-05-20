@@ -191,25 +191,74 @@ const getQrisCheckoutPage = (request_id, tagihan_id, request_timestamp, req) => 
     }
 });
 exports.getQrisCheckoutPage = getQrisCheckoutPage;
+// const paymentNotification = async (req: any) => {
+//   try {
+//     const vaData = await prisma.virtualAccount.update({
+//       where: {
+//         virtual_account_number: req.body.virtual_account_info.virtual_account_number,
+//       },
+//       data: {
+//         status: req.body.transaction.status,
+//       },
+//     });
+//     const tagihan = await prisma.tagihan.update({
+//       where: {
+//         invoice_id: req.body.order.invoice_number,
+//       },
+//       data: {
+//         status: 'VERIFIED',
+//         payment_time: req.body.transaction.date,
+//       },
+//     });
+//     const pembayaran = await prisma.pembayaran.update({
+//       where: {
+//         id: vaData.pembayaran_id,
+//       },
+//       data: {
+//         status: 'SUCCESS',
+//       },
+//     });
+//     await prisma.virtualAccount.deleteMany({
+//       where: {
+//         pembayaran: {
+//           tagihan_id: req.tagihan_id,
+//         },
+//         NOT: {
+//           status: 'SUCCESS',
+//         },
+//       },
+//     });
+//     await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, pembayaran.fcm_token);
+//     return { status: 'OK', data: tagihan.id };
+//   } catch (error) {
+//     console.log({ error: error });
+//     throw (error as any).response.data.error.message;
+//   }
+// };
 const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
-        const vaData = yield prisma.virtualAccount.update({
-            where: {
-                virtual_account_number: req.body.virtual_account_info.virtual_account_number,
-            },
-            data: {
-                status: req.body.transaction.status,
-            },
-        });
-        const tagihan = yield prisma.tagihan.update({
-            where: {
-                invoice_id: req.body.order.invoice_number,
-            },
-            data: {
-                status: 'VERIFIED',
-                payment_time: req.body.transaction.date,
-            },
-        });
+        const { virtual_account_info, transaction, order } = req.body;
+        // Perform database updates in parallel
+        const [vaData, tagihan] = yield Promise.all([
+            prisma.virtualAccount.update({
+                where: {
+                    virtual_account_number: virtual_account_info.virtual_account_number,
+                },
+                data: {
+                    status: transaction.status,
+                },
+            }),
+            prisma.tagihan.update({
+                where: {
+                    invoice_id: order.invoice_number,
+                },
+                data: {
+                    status: 'VERIFIED',
+                    payment_time: transaction.date,
+                },
+            }),
+        ]);
         const pembayaran = yield prisma.pembayaran.update({
             where: {
                 id: vaData.pembayaran_id,
@@ -218,7 +267,8 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
                 status: 'SUCCESS',
             },
         });
-        yield prisma.virtualAccount.deleteMany({
+        // Delete outdated virtual accounts asynchronously
+        const deleteVirtualAccounts = prisma.virtualAccount.deleteMany({
             where: {
                 pembayaran: {
                     tagihan_id: req.tagihan_id,
@@ -228,12 +278,15 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
                 },
             },
         });
-        yield (0, firebase_messaging_1.sendNotification)('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, pembayaran.fcm_token);
+        // Send notification asynchronously
+        const sendNotificationPromise = (0, firebase_messaging_1.sendNotification)('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, pembayaran.fcm_token);
+        // Wait for both async tasks to complete
+        yield Promise.all([deleteVirtualAccounts, sendNotificationPromise]);
         return { status: 'OK', data: tagihan.id };
     }
     catch (error) {
         console.log({ error: error });
-        throw error.response.data.error.message;
+        throw ((_c = (_b = (_a = error.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.error) === null || _c === void 0 ? void 0 : _c.message) || 'An error occurred';
     }
 });
 exports.paymentNotification = paymentNotification;
