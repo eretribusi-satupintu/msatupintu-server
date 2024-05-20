@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import { getAllVirtualAccountPayments, getQrisCheckoutPage, getVirtualAccount, paymentNotification } from '../controllers/dokuPaymentsControllerts';
+import { getAllVirtualAccountPayments, getQrisCheckoutPage, getVirtualAccount, paymentNotification } from '../controllers/dokuPaymentsController';
 
 const router = express.Router();
 router.use(bodyParser.json());

@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const dokuPaymentsControllerts_1 = require("../controllers/dokuPaymentsControllerts");
+const dokuPaymentsController_1 = require("../controllers/dokuPaymentsController");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 // router.post('/token', async (req: Request, res: Response) => {
@@ -32,7 +32,7 @@ router.use(body_parser_1.default.json());
 // });
 router.post('/virtual-account', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield (0, dokuPaymentsControllerts_1.getVirtualAccount)(req.body.request_id, req.body.tagihan_id, req.body.request_timestamp, req.body.payment_order, req.body.bank, req.body.fcm_token);
+        const data = yield (0, dokuPaymentsController_1.getVirtualAccount)(req.body.request_id, req.body.tagihan_id, req.body.request_timestamp, req.body.payment_order, req.body.bank, req.body.fcm_token);
         console.log({ routes: data });
         res.status(200).json({ data: data });
     }
@@ -45,7 +45,7 @@ router.post('/virtual-account', (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 router.get('/virtual-account/wajib-retribusi/:wr_id/status/:status', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield (0, dokuPaymentsControllerts_1.getAllVirtualAccountPayments)(Number(req.params.wr_id), req.params.status);
+        const data = yield (0, dokuPaymentsController_1.getAllVirtualAccountPayments)(Number(req.params.wr_id), req.params.status);
         console.log({ data: data });
         res.status(200).json({ data: data });
     }
@@ -58,7 +58,7 @@ router.get('/virtual-account/wajib-retribusi/:wr_id/status/:status', (req, res) 
 }));
 router.post('/qris-checkout', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const data = yield (0, dokuPaymentsControllerts_1.getQrisCheckoutPage)(req.body.request_id, req.body.tagihan_id, req.body.request_timestamp, req.body);
+        const data = yield (0, dokuPaymentsController_1.getQrisCheckoutPage)(req.body.request_id, req.body.tagihan_id, req.body.request_timestamp, req.body);
         console.log({ data: data });
         res.status(200).json({ data: data });
     }
@@ -72,7 +72,7 @@ router.post('/qris-checkout', (req, res) => __awaiter(void 0, void 0, void 0, fu
 router.post('/notifications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         return 'test';
-        const data = yield (0, dokuPaymentsControllerts_1.paymentNotification)(req);
+        const data = yield (0, dokuPaymentsController_1.paymentNotification)(req);
         res.status(200).json({ data: data });
     }
     catch (err) {
