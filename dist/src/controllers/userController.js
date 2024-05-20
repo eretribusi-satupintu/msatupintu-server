@@ -84,14 +84,14 @@ const updateUser = (user_id, req) => __awaiter(void 0, void 0, void 0, function*
         };
         if (user.wajib_retribusi !== null) {
             return {
-                message: 'authenticated',
-                data: Object.assign(Object.assign({}, userData), { role: user.wajib_retribusi }),
+                message: 'success',
+                data: Object.assign(Object.assign({}, userData), { roles: user.wajib_retribusi }),
             };
         }
         if (user.petugas !== null) {
             return {
-                message: 'authenticated',
-                data: Object.assign(Object.assign({}, userData), { role: user.petugas }),
+                message: 'success',
+                data: Object.assign(Object.assign({}, userData), { roles: user.petugas }),
             };
         }
         throw {

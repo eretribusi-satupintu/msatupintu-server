@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const userController_1 = require("../controllers/userController");
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const client_1 = require("@prisma/client");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
 router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,11 +28,25 @@ router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 }));
 router.put('/:user_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const data = yield (0, userController_1.updateUser)(Number(req.params.user_id), req.body);
+        console.log(data);
         res.status(200).json({ data: data });
     }
     catch (error) {
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002' && ((_a = error.meta) === null || _a === void 0 ? void 0 : _a.target) === 'users_phone_number_key') {
+                console.error('Error: A user with this phone number already exists.');
+                res.status(500).json({ message: 'A user with this phone number already exists.' });
+            }
+            else {
+                res.status(500).json({ message: error.message });
+            }
+        }
+        else {
+            res.status(500).json({ message: error });
+        }
         res.status(500).json({ message: error });
     }
 }));

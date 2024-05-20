@@ -43,6 +43,7 @@ export const updateUser = async (user_id: number, req: IUpdateUser) => {
       pathToSaveImage = 'public/user_profile/' + date_time + '-image.png';
       converBase64ToImage(base64, pathToSaveImage);
     }
+
     const user = await prisma.user.update({
       where: {
         id: user_id,
@@ -77,15 +78,15 @@ export const updateUser = async (user_id: number, req: IUpdateUser) => {
 
     if (user.wajib_retribusi !== null) {
       return {
-        message: 'authenticated',
-        data: { ...userData, role: user.wajib_retribusi },
+        message: 'success',
+        data: { ...userData, roles: user.wajib_retribusi },
       };
     }
 
     if (user.petugas !== null) {
       return {
-        message: 'authenticated',
-        data: { ...userData, role: user.petugas },
+        message: 'success',
+        data: { ...userData, roles: user.petugas },
       };
     }
 
