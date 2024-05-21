@@ -202,6 +202,11 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
                 pembayaran: {
                     update: {
                         status: 'SUCCESS',
+                        tagihan: {
+                            update: {
+                                status: 'VERIFIED',
+                            },
+                        },
                     },
                 },
             },

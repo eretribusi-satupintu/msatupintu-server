@@ -223,6 +223,11 @@ const paymentNotification = async (req: any) => {
         pembayaran: {
           update: {
             status: 'SUCCESS',
+            tagihan: {
+              update: {
+                status: 'VERIFIED',
+              },
+            },
           },
         },
       },
