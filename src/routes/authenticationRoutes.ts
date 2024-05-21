@@ -42,7 +42,7 @@ router.post('/logout', async (req: Request, res: Response) => {
 router.post('/notification', async (req: Request, res: Response) => {
   try {
     await sendNotification('Pembayaran berhasil', 'Pembayaran untuk tagihan tagihan 1 telah berhasil dilakukan', req.body.token);
-    return 'success';
+    res.status(403).json({ success: 'success' });
   } catch (error) {
     res.status(403).json(error);
   }

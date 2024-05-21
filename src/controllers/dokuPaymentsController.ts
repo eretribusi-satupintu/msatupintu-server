@@ -258,7 +258,7 @@ const paymentNotification = async (req: any) => {
       },
     });
 
-    await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
+    // await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
 
     return { status: 'OK', data: tagihan.id };
   } catch (error) {

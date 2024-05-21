@@ -17,7 +17,6 @@ const client_1 = require("@prisma/client");
 const axios_1 = __importDefault(require("axios"));
 const crypto_1 = __importDefault(require("crypto"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const firebase_messaging_1 = require("../utils/firebase_messaging");
 const prisma = new client_1.PrismaClient();
 dotenv_1.default.config();
 function formatISO8601(date) {
@@ -233,7 +232,7 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
                 },
             },
         });
-        yield (0, firebase_messaging_1.sendNotification)('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
+        // await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
         return { status: 'OK', data: tagihan.id };
     }
     catch (error) {
