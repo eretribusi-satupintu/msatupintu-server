@@ -221,17 +221,17 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
                 payment_time: req.body.transaction.date,
             },
         });
-        yield deleteUnPaidVA(req.tagihan_id);
-        yield prisma.virtualAccount.deleteMany({
-            where: {
-                pembayaran: {
-                    tagihan_id: req.tagihan_id,
-                },
-                NOT: {
-                    status: 'SUCCESS',
-                },
-            },
-        });
+        yield deleteUnpaidVa(req.tagihan_id);
+        // await prisma.virtualAccount.deleteMany({
+        //   where: {
+        //     pembayaran: {
+        //       tagihan_id: req.tagihan_id,
+        //     },
+        //     NOT: {
+        //       status: 'SUCCESS',
+        //     },
+        //   },
+        // });
         // await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
         return { status: 'OK', data: tagihan.id };
     }
@@ -241,7 +241,7 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.paymentNotification = paymentNotification;
-const deleteUnPaidVA = (tagihan_id) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteUnpaidVa = (tagihan_id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield prisma.virtualAccount.deleteMany({
             where: {

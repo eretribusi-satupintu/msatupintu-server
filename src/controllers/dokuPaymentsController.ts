@@ -245,18 +245,18 @@ const paymentNotification = async (req: any) => {
       },
     });
 
-    await deleteUnPaidVA(req.tagihan_id);
+    await deleteUnpaidVa(req.tagihan_id);
 
-    await prisma.virtualAccount.deleteMany({
-      where: {
-        pembayaran: {
-          tagihan_id: req.tagihan_id,
-        },
-        NOT: {
-          status: 'SUCCESS',
-        },
-      },
-    });
+    // await prisma.virtualAccount.deleteMany({
+    //   where: {
+    //     pembayaran: {
+    //       tagihan_id: req.tagihan_id,
+    //     },
+    //     NOT: {
+    //       status: 'SUCCESS',
+    //     },
+    //   },
+    // });
 
     // await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
 
@@ -267,7 +267,7 @@ const paymentNotification = async (req: any) => {
   }
 };
 
-const deleteUnPaidVA = async (tagihan_id: number) => {
+const deleteUnpaidVa = async (tagihan_id: number) => {
   try {
     await prisma.virtualAccount.deleteMany({
       where: {
