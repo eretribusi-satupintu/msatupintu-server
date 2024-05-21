@@ -212,28 +212,18 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
                 },
             },
         });
-        const tagihan = yield prisma.tagihan.update({
-            where: {
-                invoice_id: req.body.order.invoice_number,
-            },
-            data: {
-                status: 'VERIFIED',
-                payment_time: req.body.transaction.date,
-            },
-        });
-        yield deleteUnpaidVa(req.tagihan_id);
-        // await prisma.virtualAccount.deleteMany({
+        // const tagihan = await prisma.tagihan.update({
         //   where: {
-        //     pembayaran: {
-        //       tagihan_id: req.tagihan_id,
-        //     },
-        //     NOT: {
-        //       status: 'SUCCESS',
-        //     },
+        //     invoice_id: req.body.order.invoice_number,
+        //   },
+        //   data: {
+        //     status: 'VERIFIED',
+        //     payment_time: req.body.transaction.date,
         //   },
         // });
+        // await deleteUnpaidVa(req.tagihan_id);
         // await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan ${tagihan.nama} telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
-        return { status: 'OK', data: tagihan.id };
+        return { status: 'OK', data: 'tagihan.id' };
     }
     catch (error) {
         console.log({ error: error });
