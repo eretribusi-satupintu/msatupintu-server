@@ -1,4 +1,5 @@
-import { PrismaClient, StatusBayar } from '@prisma/client';
+import { PrismaClient, StatusBayar, TransaksiPetugasStatus } from '@prisma/client';
+import { ITransaksiPetugas } from '../types';
 
 const prisma = new PrismaClient();
 
@@ -343,48 +344,64 @@ export const getTagihanWajibRetribusi = async (wr_id: number, subwilayah_id: num
 
 export const getTagihanWajibRetribusiMasyarakat = async (wr_id: number) => {
   try {
-    const data = await prisma.tagihan.findMany({
+    const kontrak = await prisma.kontrak.findMany({
       where: {
-        jatuh_tempo: {
-          lt: new Date(),
-        },
-        kontrak: {
-          wajib_retribusi_id: wr_id,
-        },
-        status: 'NEW',
-        active: true,
+        wajib_retribusi_id: wr_id,
       },
       select: {
         id: true,
-        request_id: true,
-        invoice_id: true,
-        nama: true,
-        jatuh_tempo: true,
-        status: true,
-        total_harga: true,
-        kontrak: {
+      },
+    });
+
+    var tagihan_list: Object[] = [];
+
+    await Promise.all(
+      kontrak.map(async (item) => {
+        const late_data = await prisma.tagihan.findMany({
+          where: {
+            kontrak_id: item.id,
+            jatuh_tempo: {
+              lt: new Date(),
+            },
+            kontrak: {
+              wajib_retribusi_id: wr_id,
+            },
+            status: 'NEW',
+            active: true,
+          },
           select: {
-            wajib_retribusi: {
+            id: true,
+            request_id: true,
+            invoice_id: true,
+            nama: true,
+            jatuh_tempo: true,
+            status: true,
+            total_harga: true,
+            kontrak: {
               select: {
-                users: {
+                wajib_retribusi: {
                   select: {
-                    name: true,
-                    phone_number: true,
-                    email: true,
+                    users: {
+                      select: {
+                        name: true,
+                        phone_number: true,
+                        email: true,
+                      },
+                    },
                   },
                 },
-              },
-            },
-            item_retribusi: {
-              select: {
-                kategori_nama: true,
-                jenis_tagihan: true,
-                retribusi: {
+                item_retribusi: {
                   select: {
-                    nama: true,
-                    kedinasan: {
+                    kategori_nama: true,
+                    jenis_tagihan: true,
+                    retribusi: {
                       select: {
                         nama: true,
+                        kedinasan: {
+                          select: {
+                            nama: true,
+                          },
+                        },
                       },
                     },
                   },
@@ -392,52 +409,53 @@ export const getTagihanWajibRetribusiMasyarakat = async (wr_id: number) => {
               },
             },
           },
-        },
-      },
-    });
+        });
 
-    const active_data = await prisma.tagihan.findFirst({
-      where: {
-        jatuh_tempo: {
-          gt: new Date(),
-        },
-        kontrak: {
-          wajib_retribusi_id: wr_id,
-        },
-        status: 'NEW',
-        active: true,
-      },
-      select: {
-        id: true,
-        request_id: true,
-        invoice_id: true,
-        nama: true,
-        jatuh_tempo: true,
-        status: true,
-        total_harga: true,
-        kontrak: {
+        const active_data = await prisma.tagihan.findFirst({
+          where: {
+            kontrak_id: item.id,
+            jatuh_tempo: {
+              gt: new Date(),
+            },
+            kontrak: {
+              wajib_retribusi_id: wr_id,
+            },
+            status: 'NEW',
+            active: true,
+          },
           select: {
-            wajib_retribusi: {
+            id: true,
+            request_id: true,
+            invoice_id: true,
+            nama: true,
+            jatuh_tempo: true,
+            status: true,
+            total_harga: true,
+            kontrak: {
               select: {
-                users: {
+                wajib_retribusi: {
                   select: {
-                    name: true,
-                    phone_number: true,
-                    email: true,
+                    users: {
+                      select: {
+                        name: true,
+                        phone_number: true,
+                        email: true,
+                      },
+                    },
                   },
                 },
-              },
-            },
-            item_retribusi: {
-              select: {
-                kategori_nama: true,
-                jenis_tagihan: true,
-                retribusi: {
+                item_retribusi: {
                   select: {
-                    nama: true,
-                    kedinasan: {
+                    kategori_nama: true,
+                    jenis_tagihan: true,
+                    retribusi: {
                       select: {
                         nama: true,
+                        kedinasan: {
+                          select: {
+                            nama: true,
+                          },
+                        },
                       },
                     },
                   },
@@ -445,19 +463,136 @@ export const getTagihanWajibRetribusiMasyarakat = async (wr_id: number) => {
               },
             },
           },
-        },
-      },
-    });
+        });
 
-    if (active_data !== null) {
-      const tagihan = [...data, active_data];
-      return tagihan;
-    }
+        late_data.forEach((tagihan) => tagihan_list.push(tagihan));
 
-    return data;
+        if (active_data) {
+          tagihan_list.push(active_data);
+        }
+      }),
+    );
+
+    return tagihan_list;
   } catch (error) {
     throw error;
   }
+  // try {
+  //   const data = await prisma.tagihan.findMany({
+  //     where: {
+  //       jatuh_tempo: {
+  //         lt: new Date(),
+  //       },
+  //       kontrak: {
+  //         wajib_retribusi_id: wr_id,
+  //       },
+  //       status: 'NEW',
+  //       active: true,
+  //     },
+  //     select: {
+  //       id: true,
+  //       request_id: true,
+  //       invoice_id: true,
+  //       nama: true,
+  //       jatuh_tempo: true,
+  //       status: true,
+  //       total_harga: true,
+  //       kontrak: {
+  //         select: {
+  //           wajib_retribusi: {
+  //             select: {
+  //               users: {
+  //                 select: {
+  //                   name: true,
+  //                   phone_number: true,
+  //                   email: true,
+  //                 },
+  //               },
+  //             },
+  //           },
+  //           item_retribusi: {
+  //             select: {
+  //               kategori_nama: true,
+  //               jenis_tagihan: true,
+  //               retribusi: {
+  //                 select: {
+  //                   nama: true,
+  //                   kedinasan: {
+  //                     select: {
+  //                       nama: true,
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   const active_data = await prisma.tagihan.findFirst({
+  //     where: {
+  //       jatuh_tempo: {
+  //         gt: new Date(),
+  //       },
+  //       kontrak: {
+  //         wajib_retribusi_id: wr_id,
+  //       },
+  //       status: 'NEW',
+  //       active: true,
+  //     },
+  //     select: {
+  //       id: true,
+  //       request_id: true,
+  //       invoice_id: true,
+  //       nama: true,
+  //       jatuh_tempo: true,
+  //       status: true,
+  //       total_harga: true,
+  //       kontrak: {
+  //         select: {
+  //           wajib_retribusi: {
+  //             select: {
+  //               users: {
+  //                 select: {
+  //                   name: true,
+  //                   phone_number: true,
+  //                   email: true,
+  //                 },
+  //               },
+  //             },
+  //           },
+  //           item_retribusi: {
+  //             select: {
+  //               kategori_nama: true,
+  //               jenis_tagihan: true,
+  //               retribusi: {
+  //                 select: {
+  //                   nama: true,
+  //                   kedinasan: {
+  //                     select: {
+  //                       nama: true,
+  //                     },
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   if (active_data !== null) {
+  //     const tagihan = [...data, active_data];
+  //     return tagihan;
+  //   }
+
+  //   return data;
+  // } catch (error) {
+  //   throw error;
+  // }
 };
 
 export const getTagihanWajibRetribusiMasyarakatProgress = async (wr_id: number, kontrak_id: number) => {
@@ -577,17 +712,17 @@ export const getAllPaidTagihanWajibRetribusi = async (petugas_id: number, subwil
   }
 };
 
-export const getPaidTagihanWajibRetribusi = async (petugas_id: number, subwilayah_id: number, status: StatusBayar) => {
+export const getPaidTagihanWajibRetribusi = async (petugas_id: number, subwilayah_id: number, status: TransaksiPetugasStatus) => {
   try {
     const data = await prisma.tagihan.findMany({
       where: {
-        status: status,
         kontrak: {
           sub_wilayah_id: subwilayah_id,
         },
         TransaksiPetugas: {
           petugas_id: petugas_id,
           is_stored: false,
+          status: status,
         },
       },
       select: {

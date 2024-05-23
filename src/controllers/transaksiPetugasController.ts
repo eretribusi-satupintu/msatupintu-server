@@ -87,7 +87,7 @@ export const getBillAmount = async (petugas_id: number, sub_wilayah_id: number) 
       where: {
         petugas_id: petugas_id,
         is_stored: false,
-        status: 'SUCCESS',
+        status: 'VERIFIED',
         AND: {
           tagihan: {
             kontrak: {

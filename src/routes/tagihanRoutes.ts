@@ -10,13 +10,13 @@ import {
   getTagihan,
   getAllPaidTagihanWajibRetribusi,
 } from '../controllers/tagihanController';
-import { StatusBayar } from '@prisma/client';
+import { StatusBayar, TransaksiPetugasStatus } from '@prisma/client';
 
 const router = express.Router();
 
 router.use(bodyParser.json());
 
-router.get('/wajib_retribusi/:wr_id', async (req: Request, res: Response) => {
+router.get('/wajib_retribusi/:wr_id/newest', async (req: Request, res: Response) => {
   try {
     const data = await getNewest(Number(req.params.wr_id));
     res.status(200).json({ data: data });
@@ -87,7 +87,7 @@ router.get('/petugas/:petugas_id/sub-wilayah/:subwilayah_id/status/:status', asy
     const data = await getPaidTagihanWajibRetribusi(
       Number(req.params.petugas_id),
       Number(req.params.subwilayah_id),
-      req.params.status as StatusBayar,
+      req.params.status as TransaksiPetugasStatus,
     );
     res.status(200).json({ data: data });
   } catch (error) {

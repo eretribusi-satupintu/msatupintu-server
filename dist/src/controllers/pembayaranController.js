@@ -12,11 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.get = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const get = (status) => __awaiter(void 0, void 0, void 0, function* () {
+const get = (status, role_id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield prisma.pembayaran.findMany({
             where: {
                 status: status,
+                tagihan: {
+                    kontrak: {
+                        wajib_retribusi_id: role_id,
+                    },
+                },
             },
             include: {
                 tagihan: {
@@ -41,7 +46,7 @@ const get = (status) => __awaiter(void 0, void 0, void 0, function* () {
                 },
             },
         });
-        const resposeData = [];
+        // const resposeData: Object[] = [];
         // data.map((item, i) => {
         //   const { virtual_account, ...data } = item;
         //   resposeData.push({ ...data, virtual_account: item.virtual_account[i] });

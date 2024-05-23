@@ -14,6 +14,7 @@ import setoranRoutes from '../routes/setoranRoutes';
 import tagihanManualRoutes from '../routes/tagihanManualRoutes';
 import forgotPasswordRoutes from './updateForgotPasswordRoutes';
 import userRoutes from './userRoutes';
+import seedRoutes from './seedRoutes';
 
 const router = express.Router();
 router.get('/', async (req: Request, res: Response) => {
@@ -22,6 +23,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.use('/auth', authRoutes);
 router.use('/user', authValidation, userRoutes);
 router.use('/forgot-password', forgotPasswordRoutes);
+router.use('/seed', seedRoutes);
 router.use('/item-retribusi', authValidation, itemRetribusiRoutes);
 router.use('/tagihan', authValidation, tagihanRoutes);
 router.use('/tagihan-manual', authValidation, tagihanManualRoutes);

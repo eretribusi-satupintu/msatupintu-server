@@ -65,29 +65,16 @@ function generateSignature(clientId: String, requestId: String, requestTimestamp
   componentSignature += 'Request-Timestamp:' + requestTimestamp;
   componentSignature += '\n';
   componentSignature += 'Request-Target:' + requestTarget;
-  // If body not send when access API with HTTP method GET/DELETE
   if (digest) {
     componentSignature += '\n';
     componentSignature += 'Digest:' + digest;
   }
-  // return secret;
   const hmac256Value = crypto.createHmac('sha256', secret).update(componentSignature.toString()).digest();
-  // return hmac256Value;
   const bufferFromHmac256Value = Buffer.from(hmac256Value);
-  // return;
   const signature = bufferFromHmac256Value.toString('base64');
 
   return 'HMACSHA256=' + signature;
 }
-
-const generateXSignature = (secretKey: string, stringToSign: string) => {
-  const signer = crypto.createSign('sha256');
-  signer.update(stringToSign);
-  signer.end();
-
-  const signature = signer.sign(secretKey, 'base64');
-  return signature;
-};
 
 const getVirtualAccount = async (
   request_id: string,
@@ -236,6 +223,12 @@ const paymentNotification = async (req: any) => {
       select: {
         pembayaran: {
           select: {
+            tagihan: {
+              select: {
+                id: true,
+                nama: true,
+              },
+            },
             fcm_token: true,
           },
         },
@@ -252,9 +245,13 @@ const paymentNotification = async (req: any) => {
     //   },
     // });
 
-    await sendNotification('Pembayaran berhasil', `Pembayaran untuk tagihan tagihan.nama telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
+    await sendNotification(
+      'Pembayaran berhasil',
+      `Pembayaran untuk tagihan ${vaData.pembayaran.tagihan.nama} telah berhasil dilakukan`,
+      vaData.pembayaran.fcm_token,
+    );
 
-    return { status: 'OK', data: 'tagihan.id' };
+    return { status: 'OK', data: vaData.pembayaran.tagihan.id };
   } catch (error) {
     console.log({ error: error });
     throw error;

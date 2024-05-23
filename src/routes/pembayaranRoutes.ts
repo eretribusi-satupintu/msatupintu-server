@@ -4,9 +4,9 @@ import express, { Request, Response } from 'express';
 
 const router = express.Router();
 
-router.get('/:status', async (req: Request, res: Response) => {
+router.get('/:status/wajib-retribusi/:role_id', async (req: Request, res: Response) => {
   try {
-    const data = await get(req.params.status as Status);
+    const data = await get(req.params.status as Status, Number(req.params.role_id));
 
     if (res.statusCode !== 200) {
       res.status(500).json({ message: 'Internal Server Error' });

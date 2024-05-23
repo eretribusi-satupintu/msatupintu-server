@@ -65,26 +65,15 @@ function generateSignature(clientId, requestId, requestTimestamp, requestTarget,
     componentSignature += 'Request-Timestamp:' + requestTimestamp;
     componentSignature += '\n';
     componentSignature += 'Request-Target:' + requestTarget;
-    // If body not send when access API with HTTP method GET/DELETE
     if (digest) {
         componentSignature += '\n';
         componentSignature += 'Digest:' + digest;
     }
-    // return secret;
     const hmac256Value = crypto_1.default.createHmac('sha256', secret).update(componentSignature.toString()).digest();
-    // return hmac256Value;
     const bufferFromHmac256Value = Buffer.from(hmac256Value);
-    // return;
     const signature = bufferFromHmac256Value.toString('base64');
     return 'HMACSHA256=' + signature;
 }
-const generateXSignature = (secretKey, stringToSign) => {
-    const signer = crypto_1.default.createSign('sha256');
-    signer.update(stringToSign);
-    signer.end();
-    const signature = signer.sign(secretKey, 'base64');
-    return signature;
-};
 const getVirtualAccount = (request_id, tagihan_id, request_timestamp, req, bank, fcm_token) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const apiUrl = process.env.DOKU_VA_BASE_URL;
@@ -214,6 +203,12 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
             select: {
                 pembayaran: {
                     select: {
+                        tagihan: {
+                            select: {
+                                id: true,
+                                nama: true,
+                            },
+                        },
                         fcm_token: true,
                     },
                 },
@@ -228,8 +223,8 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
         //     payment_time: req.body.transaction.date,
         //   },
         // });
-        yield (0, firebase_messaging_1.sendNotification)('Pembayaran berhasil', `Pembayaran untuk tagihan tagihan.nama telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
-        return { status: 'OK', data: 'tagihan.id' };
+        yield (0, firebase_messaging_1.sendNotification)('Pembayaran berhasil', `Pembayaran untuk tagihan ${vaData.pembayaran.tagihan.nama} telah berhasil dilakukan`, vaData.pembayaran.fcm_token);
+        return { status: 'OK', data: vaData.pembayaran.tagihan.id };
     }
     catch (error) {
         console.log({ error: error });

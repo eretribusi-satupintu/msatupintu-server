@@ -17,7 +17,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const tagihanController_1 = require("../controllers/tagihanController");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
-router.get('/wajib_retribusi/:wr_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/wajib_retribusi/:wr_id/newest', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, tagihanController_1.getNewest)(Number(req.params.wr_id));
         res.status(200).json({ data: data });

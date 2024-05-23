@@ -2,11 +2,16 @@ import { PrismaClient, Status, StatusBayar } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const get = async (status: Status) => {
+export const get = async (status: Status, role_id: number) => {
   try {
     const data = await prisma.pembayaran.findMany({
       where: {
         status: status,
+        tagihan: {
+          kontrak: {
+            wajib_retribusi_id: role_id,
+          },
+        },
       },
       include: {
         tagihan: {
@@ -32,7 +37,7 @@ export const get = async (status: Status) => {
       },
     });
 
-    const resposeData: Object[] = [];
+    // const resposeData: Object[] = [];
 
     // data.map((item, i) => {
     //   const { virtual_account, ...data } = item;

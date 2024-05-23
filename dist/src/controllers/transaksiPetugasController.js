@@ -90,7 +90,7 @@ const getBillAmount = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, 
             where: {
                 petugas_id: petugas_id,
                 is_stored: false,
-                status: 'SUCCESS',
+                status: 'VERIFIED',
                 AND: {
                     tagihan: {
                         kontrak: {

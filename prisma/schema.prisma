@@ -72,7 +72,7 @@ model TransaksiPetugas {
   updated_at DateTime               @default(now()) @updatedAt
   is_stored  Boolean                @default(false)
   setoran_id Int?
-  status     TransaksiPetugasStatus @default(SUCCESS)
+  status     TransaksiPetugasStatus @default(VERIFIED)
   petugas    Petugas                @relation(fields: [petugas_id], references: [id])
   setoran    Setoran?               @relation(fields: [setoran_id], references: [id])
   tagihan    Tagihan                @relation(fields: [tagihan_id], references: [id])
@@ -333,7 +333,7 @@ enum Status {
 }
 
 enum TransaksiPetugasStatus {
-  SUCCESS
+  VERIFIED
   WAITING
 }
 
