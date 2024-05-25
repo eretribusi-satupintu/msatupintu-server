@@ -206,22 +206,24 @@ model Tagihan {
 }
 
 model TagihanManual {
-  id                Int                 @id @default(autoincrement())
+  id                Int                           @id @default(autoincrement())
   item_retribusi_id Int
-  detail_tagihan    String
+  detail_tagihan    String?
   total_harga       Int
   status            StatusTagihanManual
   paid_at           DateTime?
-  created_at        DateTime            @default(now())
-  updated_at        DateTime            @default(now()) @updatedAt
+  bukti_bayar       String?
+  metode_pembayaran MetodePembayaranTagihanManual @default(CASH)
+  created_at        DateTime                      @default(now())
+  updated_at        DateTime                      @default(now()) @updatedAt
   petugas_id        Int
   sub_wilayah_id    Int
-  is_stored         Boolean             @default(false)
+  is_stored         Boolean                       @default(false)
   setoran_id        Int?
-  item_retribusi    ItemRetribusi       @relation(fields: [item_retribusi_id], references: [id])
-  petugas           Petugas             @relation(fields: [petugas_id], references: [id])
-  setoran           Setoran?            @relation(fields: [setoran_id], references: [id])
-  subwilayah        SubWilayah          @relation(fields: [sub_wilayah_id], references: [id])
+  item_retribusi    ItemRetribusi                 @relation(fields: [item_retribusi_id], references: [id])
+  petugas           Petugas                       @relation(fields: [petugas_id], references: [id])
+  setoran           Setoran?                      @relation(fields: [setoran_id], references: [id])
+  subwilayah        SubWilayah                    @relation(fields: [sub_wilayah_id], references: [id])
 
   @@index([item_retribusi_id], map: "tagihan_manual_item_retribusi_id_fkey")
   @@index([petugas_id], map: "tagihan_manual_petugas_id_fkey")
@@ -357,4 +359,9 @@ enum LokasiSetoran {
 enum StatusTagihanManual {
   NEW
   SUCCESS
+}
+
+enum MetodePembayaranTagihanManual {
+  CASH
+  QRIS
 }

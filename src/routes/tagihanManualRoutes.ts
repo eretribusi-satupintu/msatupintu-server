@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import { getPaidTagihanManual, getTagihanManual, storeTagihanManual } from '../controllers/tagihanManualController';
+import { getPaidTagihanManual, getTagihanManual, storeTagihanManual, uploadImageTagihanManual } from '../controllers/tagihanManualController';
 
 const router = express.Router();
 
@@ -25,6 +25,17 @@ router.get('/petugas/:petugas_id/subwilayah/:subwilayah_id/paid', async (req: Re
 router.post('/petugas/:petugas_id/subwilayah/:subwilayah_id', async (req: Request, res: Response) => {
   try {
     const data = await storeTagihanManual(Number(req.params.petugas_id), Number(req.params.subwilayah_id), req.body);
+    res.status(200).json({ data: data });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+router.put('/:tagihan_manual_id/upload-image', async (req: Request, res: Response) => {
+  try {
+    const data = await uploadImageTagihanManual(Number(req.params.tagihan_manual_id), req.body.image);
+    console.log(data);
+
     res.status(200).json({ data: data });
   } catch (error) {
     res.status(500).json({ message: error });

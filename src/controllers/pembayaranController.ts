@@ -35,15 +35,10 @@ export const get = async (status: Status, role_id: number) => {
           },
         },
       },
+      orderBy: {
+        updated_at: 'desc',
+      },
     });
-
-    // const resposeData: Object[] = [];
-
-    // data.map((item, i) => {
-    //   const { virtual_account, ...data } = item;
-    //   resposeData.push({ ...data, virtual_account: item.virtual_account[i] });
-    // });
-
     return data;
   } catch (error) {
     throw error;

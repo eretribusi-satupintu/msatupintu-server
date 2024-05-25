@@ -212,6 +212,7 @@ const paymentNotification = async (req: any) => {
         pembayaran: {
           update: {
             status: 'SUCCESS',
+            updated_at: req.body.transaction.date,
             tagihan: {
               update: {
                 status: 'VERIFIED',

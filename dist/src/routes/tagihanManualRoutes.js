@@ -42,4 +42,14 @@ router.post('/petugas/:petugas_id/subwilayah/:subwilayah_id', (req, res) => __aw
         res.status(500).json({ message: error });
     }
 }));
+router.put('/:tagihan_manual_id/upload-image', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield (0, tagihanManualController_1.uploadImageTagihanManual)(Number(req.params.tagihan_manual_id), req.body.image);
+        console.log(data);
+        res.status(200).json({ data: data });
+    }
+    catch (error) {
+        res.status(500).json({ message: error });
+    }
+}));
 exports.default = router;

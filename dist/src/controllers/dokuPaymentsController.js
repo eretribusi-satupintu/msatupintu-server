@@ -192,6 +192,7 @@ const paymentNotification = (req) => __awaiter(void 0, void 0, void 0, function*
                 pembayaran: {
                     update: {
                         status: 'SUCCESS',
+                        updated_at: req.body.transaction.date,
                         tagihan: {
                             update: {
                                 status: 'VERIFIED',

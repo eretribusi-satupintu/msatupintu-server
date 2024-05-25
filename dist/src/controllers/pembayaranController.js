@@ -45,12 +45,10 @@ const get = (status, role_id) => __awaiter(void 0, void 0, void 0, function* () 
                     },
                 },
             },
+            orderBy: {
+                updated_at: 'desc',
+            },
         });
-        // const resposeData: Object[] = [];
-        // data.map((item, i) => {
-        //   const { virtual_account, ...data } = item;
-        //   resposeData.push({ ...data, virtual_account: item.virtual_account[i] });
-        // });
         return data;
     }
     catch (error) {
