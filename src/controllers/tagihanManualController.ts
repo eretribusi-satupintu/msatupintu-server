@@ -134,7 +134,7 @@ export const storeTagihanManual = async (petugas_id: number, subwilayah_id: numb
         subwilayah: {
           select: {
             nama: true,
-          },  
+          },
         },
         total_harga: true,
         detail_tagihan: true,
