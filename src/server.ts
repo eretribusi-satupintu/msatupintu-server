@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import routes from './routes';
+import path from 'path';
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ app.use(cors(corsOption));
 
 app.use(express.json({ limit: '20mb' }));
 
-app.use('/public', express.static('../public'));
+app.use('/public', express.static(path.join(__dirname, '../../public')));
 
 app.use('/api', routes);
 

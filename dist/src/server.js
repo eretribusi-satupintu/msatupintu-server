@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const routes_1 = __importDefault(require("./routes"));
+const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = 3000;
@@ -15,7 +16,7 @@ const corsOption = {
 };
 app.use((0, cors_1.default)(corsOption));
 app.use(express_1.default.json({ limit: '20mb' }));
-app.use('/public', express_1.default.static('../public'));
+app.use('/public', express_1.default.static(path_1.default.join(__dirname, '../../public')));
 app.use('/api', routes_1.default);
 app.get('/', (req, res) => {
     return res.send('Server running');
