@@ -17,7 +17,10 @@ app.use(cors(corsOption));
 
 app.use(express.json({ limit: '20mb' }));
 
-app.use('/public', express.static(path.join(__dirname, '../../public')));
+// prod
+// app.use('/public', express.static(path.join(__dirname, '../../public')));
+
+app.use('/public', express.static('public'));
 
 app.use('/api', routes);
 

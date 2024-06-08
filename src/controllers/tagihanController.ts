@@ -734,6 +734,12 @@ export const getPaidTagihanWajibRetribusi = async (petugas_id: number, subwilaya
         payment_time: true,
         status: true,
         total_harga: true,
+        TransaksiPetugas: {
+          select: {
+            metode_penagihan: true,
+            bukti_bayar: true,
+          },
+        },
         kontrak: {
           select: {
             wajib_retribusi: {
@@ -765,6 +771,9 @@ export const getPaidTagihanWajibRetribusi = async (petugas_id: number, subwilaya
             },
           },
         },
+      },
+      orderBy: {
+        payment_time: 'desc',
       },
     });
 
@@ -969,6 +978,67 @@ export const getDetailTagihan = async (tagihan_id: number) => {
                 },
               },
             },
+          },
+        },
+      },
+    });
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getDetailTagihanPetugas = async (tagihan_id: number) => {
+  try {
+    const data = await prisma.tagihan.findUnique({
+      where: {
+        id: tagihan_id,
+      },
+      select: {
+        id: true,
+        request_id: true,
+        invoice_id: true,
+        nama: true,
+        jatuh_tempo: true,
+        status: true,
+        total_harga: true,
+        payment_time: true,
+        kontrak: {
+          select: {
+            wajib_retribusi: {
+              select: {
+                users: {
+                  select: {
+                    name: true,
+                    phone_number: true,
+                    email: true,
+                  },
+                },
+              },
+            },
+            item_retribusi: {
+              select: {
+                kategori_nama: true,
+                jenis_tagihan: true,
+                retribusi: {
+                  select: {
+                    nama: true,
+                    kedinasan: {
+                      select: {
+                        nama: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        TransaksiPetugas: {
+          select: {
+            metode_penagihan: true,
+            bukti_bayar: true,
           },
         },
       },

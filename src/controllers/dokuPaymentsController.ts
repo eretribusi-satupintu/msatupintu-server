@@ -181,6 +181,8 @@ const getQrisCheckoutPage = async (request_id: string, tagihan_id: number, reque
       throw res.data;
     }
 
+    console.log(res);
+
     const qrisCheckout = await prisma.checkoutPayment.create({
       data: {
         tagihan_id: tagihan_id,
@@ -195,7 +197,7 @@ const getQrisCheckoutPage = async (request_id: string, tagihan_id: number, reque
 
     return qrisCheckout;
   } catch (error) {
-    console.log({ error: (error as any).response.data });
+    console.log({ error: error });
     // throw error;
     throw (error as any).response.data.error.message;
   }

@@ -9,6 +9,7 @@ import {
   getTagihanWajibRetribusiMasyarakatProgress,
   getTagihan,
   getAllPaidTagihanWajibRetribusi,
+  getDetailTagihanPetugas,
 } from '../controllers/tagihanController';
 import { StatusBayar, TransaksiPetugasStatus } from '@prisma/client';
 
@@ -124,6 +125,17 @@ router.get('/petugas/:petugas_id', async (req: Request, res: Response) => {
 router.get('/:tagihan_id', async (req: Request, res: Response) => {
   try {
     const data = await getDetailTagihan(Number(req.params.tagihan_id));
+    res.status(200).json({ data: data });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      message: error,
+    });
+  }
+});
+router.get('/:tagihan_id/petugas', async (req: Request, res: Response) => {
+  try {
+    const data = await getDetailTagihanPetugas(Number(req.params.tagihan_id));
     res.status(200).json({ data: data });
   } catch (error) {
     console.log(error);

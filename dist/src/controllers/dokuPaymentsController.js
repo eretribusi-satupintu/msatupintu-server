@@ -161,6 +161,7 @@ const getQrisCheckoutPage = (request_id, tagihan_id, request_timestamp, req) => 
         if (res.status != 200) {
             throw res.data;
         }
+        console.log(res);
         const qrisCheckout = yield prisma.checkoutPayment.create({
             data: {
                 tagihan_id: tagihan_id,
@@ -175,7 +176,7 @@ const getQrisCheckoutPage = (request_id, tagihan_id, request_timestamp, req) => 
         return qrisCheckout;
     }
     catch (error) {
-        console.log({ error: error.response.data });
+        console.log({ error: error });
         // throw error;
         throw error.response.data.error.message;
     }

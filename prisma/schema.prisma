@@ -64,18 +64,20 @@ model PetugasSubWilayah {
 }
 
 model TransaksiPetugas {
-  id         Int                    @id @default(autoincrement())
-  tagihan_id Int                    @unique
-  petugas_id Int
-  nominal    Float
-  created_at DateTime               @default(now())
-  updated_at DateTime               @default(now()) @updatedAt
-  is_stored  Boolean                @default(false)
-  setoran_id Int?
-  status     TransaksiPetugasStatus @default(VERIFIED)
-  petugas    Petugas                @relation(fields: [petugas_id], references: [id])
-  setoran    Setoran?               @relation(fields: [setoran_id], references: [id])
-  tagihan    Tagihan                @relation(fields: [tagihan_id], references: [id])
+  id               Int                     @id @default(autoincrement())
+  tagihan_id       Int                     @unique
+  petugas_id       Int
+  nominal          Float
+  created_at       DateTime                @default(now())
+  updated_at       DateTime                @default(now()) @updatedAt
+  is_stored        Boolean                 @default(false)
+  setoran_id       Int?
+  metode_penagihan MetodePembayaranTagihan @default(CASH)
+  bukti_bayar      String?
+  status           TransaksiPetugasStatus  @default(VERIFIED)
+  petugas          Petugas                 @relation(fields: [petugas_id], references: [id])
+  setoran          Setoran?                @relation(fields: [setoran_id], references: [id])
+  tagihan          Tagihan                 @relation(fields: [tagihan_id], references: [id])
 
   @@index([petugas_id], map: "transaksi_petugas_petugas_id_fkey")
   @@index([setoran_id], map: "transaksi_petugas_setoran_id_fkey")
@@ -206,24 +208,24 @@ model Tagihan {
 }
 
 model TagihanManual {
-  id                Int                           @id @default(autoincrement())
+  id                Int                     @id @default(autoincrement())
   item_retribusi_id Int
   detail_tagihan    String?
   total_harga       Int
   status            StatusTagihanManual
   paid_at           DateTime?
   bukti_bayar       String?
-  metode_pembayaran MetodePembayaranTagihanManual @default(CASH)
-  created_at        DateTime                      @default(now())
-  updated_at        DateTime                      @default(now()) @updatedAt
+  metode_pembayaran MetodePembayaranTagihan @default(CASH)
+  created_at        DateTime                @default(now())
+  updated_at        DateTime                @default(now()) @updatedAt
   petugas_id        Int
   sub_wilayah_id    Int
-  is_stored         Boolean                       @default(false)
+  is_stored         Boolean                 @default(false)
   setoran_id        Int?
-  item_retribusi    ItemRetribusi                 @relation(fields: [item_retribusi_id], references: [id])
-  petugas           Petugas                       @relation(fields: [petugas_id], references: [id])
-  setoran           Setoran?                      @relation(fields: [setoran_id], references: [id])
-  subwilayah        SubWilayah                    @relation(fields: [sub_wilayah_id], references: [id])
+  item_retribusi    ItemRetribusi           @relation(fields: [item_retribusi_id], references: [id])
+  petugas           Petugas                 @relation(fields: [petugas_id], references: [id])
+  setoran           Setoran?                @relation(fields: [setoran_id], references: [id])
+  subwilayah        SubWilayah              @relation(fields: [sub_wilayah_id], references: [id])
 
   @@index([item_retribusi_id], map: "tagihan_manual_item_retribusi_id_fkey")
   @@index([petugas_id], map: "tagihan_manual_petugas_id_fkey")
@@ -361,7 +363,7 @@ enum StatusTagihanManual {
   SUCCESS
 }
 
-enum MetodePembayaranTagihanManual {
+enum MetodePembayaranTagihan {
   CASH
   QRIS
 }

@@ -1,4 +1,4 @@
-import { LokasiSetoran, MetodePembayaranTagihanManual, StatusTagihanManual } from '@prisma/client';
+import { LokasiSetoran, MetodePembayaranTagihan, StatusTagihanManual } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 
 export interface User {
@@ -100,6 +100,8 @@ export interface ITransaksiPetugas {
   petugas_id: number;
   tagihan_id: number;
   nominal: number;
+  metode_pembayaran: MetodePembayaranTagihan;
+  bukti_bayar?: string;
   disetor?: boolean;
   status?: string;
 }
@@ -110,7 +112,7 @@ export interface ITagihanManual {
   total_harga: number;
   status: StatusTagihanManual;
   paid_at: string;
-  metode_pembayaran: MetodePembayaranTagihanManual;
+  metode_pembayaran: MetodePembayaranTagihan;
 }
 
 export interface ICheckoutQrisRequest {

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDetailTagihan = exports.getTagihan = exports.getPaidTagihanWajibRetribusi = exports.getAllPaidTagihanWajibRetribusi = exports.getTagihanWajibRetribusiMasyarakatProgress = exports.getTagihanWajibRetribusiMasyarakat = exports.getTagihanWajibRetribusi = exports.getNewest = void 0;
+exports.getDetailTagihanPetugas = exports.getDetailTagihan = exports.getTagihan = exports.getPaidTagihanWajibRetribusi = exports.getAllPaidTagihanWajibRetribusi = exports.getTagihanWajibRetribusiMasyarakatProgress = exports.getTagihanWajibRetribusiMasyarakat = exports.getTagihanWajibRetribusi = exports.getNewest = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const getNewest = (wr_id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -717,6 +717,12 @@ const getPaidTagihanWajibRetribusi = (petugas_id, subwilayah_id, status) => __aw
                 payment_time: true,
                 status: true,
                 total_harga: true,
+                TransaksiPetugas: {
+                    select: {
+                        metode_penagihan: true,
+                        bukti_bayar: true,
+                    },
+                },
                 kontrak: {
                     select: {
                         wajib_retribusi: {
@@ -748,6 +754,9 @@ const getPaidTagihanWajibRetribusi = (petugas_id, subwilayah_id, status) => __aw
                         },
                     },
                 },
+            },
+            orderBy: {
+                payment_time: 'desc',
             },
         });
         return data;
@@ -954,3 +963,64 @@ const getDetailTagihan = (tagihan_id) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.getDetailTagihan = getDetailTagihan;
+const getDetailTagihanPetugas = (tagihan_id) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield prisma.tagihan.findUnique({
+            where: {
+                id: tagihan_id,
+            },
+            select: {
+                id: true,
+                request_id: true,
+                invoice_id: true,
+                nama: true,
+                jatuh_tempo: true,
+                status: true,
+                total_harga: true,
+                payment_time: true,
+                kontrak: {
+                    select: {
+                        wajib_retribusi: {
+                            select: {
+                                users: {
+                                    select: {
+                                        name: true,
+                                        phone_number: true,
+                                        email: true,
+                                    },
+                                },
+                            },
+                        },
+                        item_retribusi: {
+                            select: {
+                                kategori_nama: true,
+                                jenis_tagihan: true,
+                                retribusi: {
+                                    select: {
+                                        nama: true,
+                                        kedinasan: {
+                                            select: {
+                                                nama: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                TransaksiPetugas: {
+                    select: {
+                        metode_penagihan: true,
+                        bukti_bayar: true,
+                    },
+                },
+            },
+        });
+        return data;
+    }
+    catch (error) {
+        throw error;
+    }
+});
+exports.getDetailTagihanPetugas = getDetailTagihanPetugas;

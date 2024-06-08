@@ -130,4 +130,16 @@ router.get('/:tagihan_id', (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
 }));
+router.get('/:tagihan_id/petugas', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield (0, tagihanController_1.getDetailTagihanPetugas)(Number(req.params.tagihan_id));
+        res.status(200).json({ data: data });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).json({
+            message: error,
+        });
+    }
+}));
 exports.default = router;

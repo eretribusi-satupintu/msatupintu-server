@@ -12,9 +12,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.synchronizationLocalPayment = exports.getBillAmount = exports.petugasCancelPayTagihan = exports.petugasPayTagihan = void 0;
 const client_1 = require("@prisma/client");
 const tagihanController_1 = require("./tagihanController");
+const convert_base64_to_image_1 = require("convert-base64-to-image");
 const prisma = new client_1.PrismaClient();
 const petugasPayTagihan = (transaksiPetugas) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
+        var bukti_bayar = '';
+        if (transaksiPetugas.bukti_bayar != null && transaksiPetugas.bukti_bayar != '' && transaksiPetugas.metode_pembayaran != 'CASH') {
+            const base64 = (_a = 'data:image/png;base64,' + transaksiPetugas.bukti_bayar) !== null && _a !== void 0 ? _a : '';
+            const date_time = new Date().toISOString();
+            const pathToSaveImage = 'public/assets/bukti-pembayaran-tagihan/' + date_time + '-' + transaksiPetugas.petugas_id + transaksiPetugas.tagihan_id + '-image.png';
+            (0, convert_base64_to_image_1.converBase64ToImage)(base64, pathToSaveImage);
+            bukti_bayar = pathToSaveImage;
+            console.log({ base64: base64 });
+        }
         const tagihan = yield prisma.tagihan.update({
             where: {
                 id: transaksiPetugas.tagihan_id,
@@ -29,6 +40,8 @@ const petugasPayTagihan = (transaksiPetugas) => __awaiter(void 0, void 0, void 0
                 petugas_id: transaksiPetugas.petugas_id,
                 tagihan_id: tagihan.id,
                 nominal: tagihan.total_harga,
+                metode_penagihan: transaksiPetugas.metode_pembayaran,
+                bukti_bayar: bukti_bayar,
             },
         });
         const tagihanDetail = yield (0, tagihanController_1.getDetailTagihan)(tagihan.id);
@@ -134,12 +147,14 @@ const checkTransaksiExist = (id) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 const synchronizationLocalPayment = (petugas_id, req) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
     try {
         for (const tagihan_id of req.tagihan_local_id) {
             if ((yield checkTransaksiExist(tagihan_id)) == false) {
                 const transaksiPetugas = {
                     petugas_id: petugas_id,
                     tagihan_id: tagihan_id,
+                    metode_pembayaran: (_b = req.metode_pembayaran) !== null && _b !== void 0 ? _b : 'CASH',
                     nominal: req.amount,
                 };
                 yield (0, exports.petugasPayTagihan)(transaksiPetugas);
