@@ -887,47 +887,6 @@ export const getTagihan = async (petugas_id: number) => {
     );
 
     return tagihan_list;
-
-    // const data = await prisma.tagihan.findMany({
-    //   where: {
-    //     kontrak: {
-    //       sub_wilayah: {
-    //         PetugasSubWilayah: {
-    //           some: {
-    //             petugas_id: petugas_id,
-    //           },
-    //         },
-    //       },
-    //     },
-    //     status: 'NEW',
-    //     active: true,
-    //   },
-    //   select: {
-    //     id: true,
-    //     nama: true,
-    //     jatuh_tempo: true,
-    //     status: true,
-    //     total_harga: true,
-    //     kontrak: {
-    //       select: {
-    //         wajib_retribusi: {
-    //           select: {
-    //             users: {
-    //               select: {
-    //                 name: true,
-    //               },
-    //             },
-    //           },
-    //         },
-    //         sub_wilayah: {
-    //           select: { id: true, nama: true },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-
-    // return data;
   } catch (error) {
     throw error;
   }
