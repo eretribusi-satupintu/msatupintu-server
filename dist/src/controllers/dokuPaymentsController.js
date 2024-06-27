@@ -135,8 +135,9 @@ const getVirtualAccount = (request_id, tagihan_id, request_timestamp, req, bank,
         return response;
     }
     catch (error) {
-        console.log({ error: error.response.message });
-        throw error.response.data.error.message;
+        console.log({ error: 'test' });
+        // throw (error as any).response.data.error.message;
+        throw error;
     }
 });
 exports.getVirtualAccount = getVirtualAccount;

@@ -150,9 +150,10 @@ const getVirtualAccount = async (
 
     return response;
   } catch (error) {
-    console.log({ error: (error as any).response.message });
+    console.log({ error: 'test' });
 
-    throw (error as any).response.data.error.message;
+    // throw (error as any).response.data.error.message;
+    throw error;
   }
 };
 
