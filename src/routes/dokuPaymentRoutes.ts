@@ -5,19 +5,18 @@ import { getAllVirtualAccountPayments, getQrisCheckoutPage, getVirtualAccount, p
 const router = express.Router();
 router.use(bodyParser.json());
 
-// router.post('/token', async (req: Request, res: Response) => {
-//   try {
-//     // res.status(200).json({ data: req.body.payment_order });
-//     const data = await getToken();
-//     console.log({ routes: data });
-//     res.status(200).json({ data: data });
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).json({
-//       message: err,
-//     });
-//   }
-// });
+router.post('/get-token', async (req: Request, res: Response) => {
+  // try {
+  //   const data = await getToken();
+  //   console.log({ routes: data });
+  //   res.status(200).json({ data: data });
+  // } catch (err) {
+  //   console.log({ err_routes: (err as any).response });
+  //   res.status(500).json({
+  //     message: err,
+  //   });
+  // }
+});
 
 router.post('/virtual-account', async (req: Request, res: Response) => {
   try {

@@ -17,19 +17,18 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const dokuPaymentsController_1 = require("../controllers/dokuPaymentsController");
 const router = express_1.default.Router();
 router.use(body_parser_1.default.json());
-// router.post('/token', async (req: Request, res: Response) => {
-//   try {
-//     // res.status(200).json({ data: req.body.payment_order });
-//     const data = await getToken();
-//     console.log({ routes: data });
-//     res.status(200).json({ data: data });
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).json({
-//       message: err,
-//     });
-//   }
-// });
+router.post('/get-token', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // try {
+    //   const data = await getToken();
+    //   console.log({ routes: data });
+    //   res.status(200).json({ data: data });
+    // } catch (err) {
+    //   console.log({ err_routes: (err as any).response });
+    //   res.status(500).json({
+    //     message: err,
+    //   });
+    // }
+}));
 router.post('/virtual-account', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield (0, dokuPaymentsController_1.getVirtualAccount)(req.body.request_id, req.body.tagihan_id, req.body.request_timestamp, req.body.payment_order, req.body.bank, req.body.fcm_token);

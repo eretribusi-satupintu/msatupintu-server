@@ -76,6 +76,31 @@ function generateSignature(clientId: String, requestId: String, requestTimestamp
   return 'HMACSHA256=' + signature;
 }
 
+async function getToken() {
+  // const apiUrl = process.env.DOKU_VA_BASE_URL;
+  // const clientId = process.env.DOKU_CLIENT_ID;
+  // const xTimestamp = formattedUtcTimestamp;
+  // const requestTarget = '/api/v1/access-token/b2b2c';
+  // const xSignature = clientId + '+' + xTimestamp;
+  // const headers = {
+  //   'X-SIGNATURE': xSignature,
+  //   'X-TIMESTAMP': xTimestamp,
+  //   'X-CLIENT-KEY': clientId,
+  //   'Content-Type': 'application/json',
+  // };
+  // const body = {
+  //   grantType:
+  //     'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF5bG9hZCI6IjEzIiwiaWF0IjoxNzE5NTQwNjA5LCJleHAiOjE3MTk2MjcwMDl9.73iWeyixC-pUhfOXdqxoVKCT2gDQfZh6G3yYDzt0_L8"',
+  //   //  "authCode":"a6975f82-d00a-4ddc-9633-087fefb6275e",
+  //   //  "refreshToken":"83a58570-6795-11ec-90d6-0242ac120003",
+  // };
+  // const data = await axios.post('https://api-sandbox.doku.com/authorization/v1/access-token/b2b', body, { headers }).catch((err) => {
+  //   throw err.response.data;
+  // });
+  // console.log(data);
+  // return data.data;
+}
+
 const getVirtualAccount = async (
   request_id: string,
   tagihan_id: number,
@@ -150,10 +175,9 @@ const getVirtualAccount = async (
 
     return response;
   } catch (error) {
-    console.log({ error: 'test' });
+    console.log({ error: (error as any).response.message });
 
-    // throw (error as any).response.data.error.message;
-    throw error;
+    throw (error as any).response;
   }
 };
 
@@ -331,4 +355,4 @@ const getAllVirtualAccountPayments = async (wr_id: number, status: string) => {
   }
 };
 
-export { getVirtualAccount, paymentNotification, getQrisCheckoutPage, getAllVirtualAccountPayments };
+export { getVirtualAccount, paymentNotification, getQrisCheckoutPage, getAllVirtualAccountPayments, getToken };
