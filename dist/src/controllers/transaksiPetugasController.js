@@ -93,6 +93,7 @@ const getBillAmount = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, 
                 petugas_id: petugas_id,
                 is_stored: false,
                 sub_wilayah_id: sub_wilayah_id,
+                metode_pembayaran: 'CASH',
             },
             select: {
                 id: true,
@@ -104,6 +105,7 @@ const getBillAmount = (petugas_id, sub_wilayah_id) => __awaiter(void 0, void 0, 
                 petugas_id: petugas_id,
                 is_stored: false,
                 status: 'VERIFIED',
+                metode_penagihan: 'CASH',
                 AND: {
                     tagihan: {
                         kontrak: {

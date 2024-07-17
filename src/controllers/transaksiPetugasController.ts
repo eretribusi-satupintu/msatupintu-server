@@ -91,6 +91,7 @@ export const getBillAmount = async (petugas_id: number, sub_wilayah_id: number) 
         petugas_id: petugas_id,
         is_stored: false,
         sub_wilayah_id: sub_wilayah_id,
+        metode_pembayaran: 'CASH',
       },
       select: {
         id: true,
@@ -103,6 +104,7 @@ export const getBillAmount = async (petugas_id: number, sub_wilayah_id: number) 
         petugas_id: petugas_id,
         is_stored: false,
         status: 'VERIFIED',
+        metode_penagihan: 'CASH',
         AND: {
           tagihan: {
             kontrak: {
