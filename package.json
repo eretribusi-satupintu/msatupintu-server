@@ -7,7 +7,7 @@
     "clean": "rimraf dist",
     "build": "rimraf dist && npm run postinstall && tsc && cp -R public dist/",
     "dev": "node dist/src/server.js",
-    "start": "nodemon src/index.ts",
+    "start": "nodemon src/server.ts",
     "start:dev": "ts-node-dev --poll src/server.ts",
     "start:watch": "nodemon -r src/server.ts",
     "postinstall": "prisma generate",
